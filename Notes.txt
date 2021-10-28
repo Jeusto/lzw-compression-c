@@ -2,8 +2,12 @@
 2) Implementer & tester trie // Arhun
 3) Tester hashmap // Ensemble
 4) Implementer & tester dictionnaire // Ensemble
-5) Implementer & tester la compression lzw // Arhun
-6) Implementer & tester la decompression lzw // Jodel
-7) Creer des tests pour verifier le fonctionnement 
-8) Evaluer les performances avec les tests
-9) Ecrire le rapport
+5) Faire le makefile // Ensemble
+6) Implementer & tester la compression lzw // Arhun
+7) Implementer & tester la decompression lzw // Jodel
+8) Faire la fonction main qui correspond au programme
+9) Creer des tests pour verifier le fonctionnement 
+11) Evaluer les performances avec les tests
+12) Ecrire le rapport
+13) Rendre le code plus propre
+
