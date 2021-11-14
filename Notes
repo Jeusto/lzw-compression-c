@@ -21,9 +21,9 @@ make && make valgrind
 
 ### Utilisation du programme:
 
-- bin/lzw [options] <fichier1.?>
+- bin/lzw [options] <fichier1.???>
 - par defaut :
-  - chosir la meilleure structure de donne en fonction de la taille
+  - chosir la meilleure structure de donnees en fonction de la taille
   - compresser <fichier1.txt> placer resultat dans <fichier1.lzw>
   - ou decompresser <fichier1.lzw> placer resultat dans <fichier1.txt>
 - options :
