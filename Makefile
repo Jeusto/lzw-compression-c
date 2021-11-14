@@ -5,7 +5,8 @@ OBJDIR	:= ./obj
 SRCDIR 	:= ./src
 
 # Options de compilation
-CFLAGS = -g -Wall -Wextra -O2 -std=c99
+# TODO: Ajouter -Werror et -Wextra a la fin et enleverles -Wno
+CFLAGS = -g -Wall -Wno-unused-variable -O2 -std=c99
 CC 	= gcc
 EXEC = $(BINDIR)/lzw
 
@@ -19,17 +20,21 @@ all: $(EXEC)
 
 # Création de l'exécutable
 $(EXEC): $(OBJ)
-	mkdir -p $(BINDIR)
-	$(CC) -o $(EXEC) $^ $(CFLAGS)
+	@mkdir -p $(BINDIR)
+	@$(CC) -o $(EXEC) $^ $(CFLAGS)
+	@echo "L'éxecutable a été crée."
+	@echo "Utilisation: /bin/lzw [options] <chemin_fichier>"
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.c
 	mkdir -p $(OBJDIR)
 	$(CC) -o $@ -c $< $(CFLAGS)
 
-# Verifier fuites de memoire et autres
+# TODO
 valgrind: 
-	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose --log-file=valgrind-out.txt $(EXEC) 
+	@echo "Retrouver le résultat de Valgrind dans le fichier valgrind-results.txt"
+	@valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose --log-file=valgrind-results.txt $(EXEC) 
 
 # Nettoyage complet
 clean:
-	rm -rf $(OBJDIR) $(BINDIR) $(DOCDIR) ../$(DIST).tar.xz $(EXEC)
+	@rm -rf $(OBJDIR) $(BINDIR) $(DOCDIR) ../$(DIST).tar.xz valgrind-results.txt
+	@echo "Nettoyage des fichiers et dossier inutiles effectué."

@@ -5,12 +5,10 @@
 
 /*
    This is free and unencumbered software released into the public domain.
-
    Anyone is free to copy, modify, publish, use, compile, sell, or
    distribute this software, either in source code form or as a compiled
    binary, for any purpose, commercial or non-commercial, and by any
    means.
-
    In jurisdictions that recognize copyright laws, the author or authors
    of this software dedicate any and all copyright interest in the
    software to the public domain. We make this dedication for the benefit
@@ -18,7 +16,6 @@
    successors. We intend this dedication to be an overt act of
    relinquishment in perpetuity of all present and future rights to this
    software under copyright law.
-
    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
    EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -26,7 +23,6 @@
    OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
    ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
    OTHER DEALINGS IN THE SOFTWARE.
-
    For more information, please refer to <http://unlicense.org/>
 */
 #ifndef SHEREDOM_HASHMAP_H_INCLUDED
@@ -41,7 +37,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#if (defined(_MSC_VER) && defined(__AVX__)) ||                                 \
+#if (defined(_MSC_VER) && defined(__AVX__)) || \
     (!defined(_MSC_VER) && defined(__SSE4_2__))
 #define HASHMAP_SSE42
 #endif
@@ -144,10 +140,9 @@ static int hashmap_remove(struct hashmap_s *const hashmap,
 /// @param len The length of the string key.
 /// @return On success the original stored key pointer is returned, on failure
 /// NULL is returned.
-static const char *
-hashmap_remove_and_return_key(struct hashmap_s *const hashmap,
-                              const char *const key,
-                              const unsigned len) HASHMAP_USED;
+static const char *hashmap_remove_and_return_key(
+    struct hashmap_s *const hashmap, const char *const key,
+    const unsigned len) HASHMAP_USED;
 
 /// @brief Iterate over all the elements in a hashmap.
 /// @param hashmap The hashmap to iterate over.
@@ -175,8 +170,8 @@ static int hashmap_iterate_pairs(struct hashmap_s *const hashmap,
 /// @brief Get the size of the hashmap.
 /// @param hashmap The hashmap to get the size of.
 /// @return The size of the hashmap.
-static unsigned
-hashmap_num_entries(const struct hashmap_s *const hashmap) HASHMAP_USED;
+static unsigned hashmap_num_entries(const struct hashmap_s *const hashmap)
+    HASHMAP_USED;
 
 /// @brief Destroy the hashmap.
 /// @param hashmap The hashmap to destroy.
@@ -193,9 +188,8 @@ static int hashmap_match_helper(const struct hashmap_element_s *const element,
 static int hashmap_hash_helper(const struct hashmap_s *const m,
                                const char *const key, const unsigned len,
                                unsigned *const out_index) HASHMAP_USED;
-static int
-hashmap_rehash_iterator(void *const new_hash,
-                        struct hashmap_element_s *const e) HASHMAP_USED;
+static int hashmap_rehash_iterator(
+    void *const new_hash, struct hashmap_element_s *const e) HASHMAP_USED;
 static int hashmap_rehash_helper(struct hashmap_s *const m) HASHMAP_USED;
 
 #if defined(__cplusplus)
@@ -369,14 +363,14 @@ int hashmap_iterate_pairs(struct hashmap_s *const hashmap,
     if (p->in_use) {
       r = f(context, p);
       switch (r) {
-      case -1: /* remove item */
-        memset(p, 0, sizeof(struct hashmap_element_s));
-        hashmap->size--;
-        break;
-      case 0: /* continue iterating */
-        break;
-      default: /* early exit */
-        return 1;
+        case -1: /* remove item */
+          memset(p, 0, sizeof(struct hashmap_element_s));
+          hashmap->size--;
+          break;
+        case 0: /* continue iterating */
+          break;
+        default: /* early exit */
+          return 1;
       }
     }
   }

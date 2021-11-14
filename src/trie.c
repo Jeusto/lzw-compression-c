@@ -54,7 +54,7 @@ bool recherche_trie(Noeud_Trie *trie, const char *str) {
   }
 
   int len = strlen(str);
-  char char_temporaire;
+  unsigned int char_temporaire;
   Noeud_Trie *noeud_temporaire = trie;
 
   // Parcourir les characteres un par un

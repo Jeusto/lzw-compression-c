@@ -9,8 +9,10 @@
 #include <unistd.h>
 
 #include "../include/hashmap.h"
+#include "../include/hex.h"
 #include "../include/liste-chainee.h"
 #include "../include/trie.h"
+#include "../include/utils.h"
 
 /**
  * @brief Gere l'execution du programme

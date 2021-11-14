@@ -1,8 +1,70 @@
-/*
+#include <argp.h>
+#include <ctype.h>
+#include <fcntl.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/stat.h>
+#include <time.h>
+#include <unistd.h>/*
    The latest version of this library is available on GitHub;
    https://github.com/sheredom/hashmap.h
 */
 
+// More info about the functions here:
+// https://nachtimwald.com/2017/09/24/hex-encode-and-decode-in-c/
+
+#include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+unsigned long hex2dec(char *hex) { return strtoul(hex, NULL, 16); }
+
+// inspired from https://www.sanfoundry.com/c-program-convert-decimal-hex/
+char *dec2hex(unsigned long decimal, char *hex, unsigned size, bool fill) {
+  char *tmp = (char *)malloc((size) * sizeof(char));
+
+  if (hex == NULL) {
+    // size + 1 to take into account the '\0' string code
+    hex = (char *)malloc((size + 1) * sizeof(char));
+    hex[size] = '\0';
+  }
+
+  long quotient, remainder;
+  int hex_size = 0;
+  quotient = decimal;
+
+  while (quotient != 0) {
+    remainder = quotient % 16;
+    if (remainder < 10) {
+      tmp[hex_size] = 48 + remainder;
+    } else {
+      tmp[hex_size] = 55 + remainder;
+    }
+    hex_size++;
+    quotient = quotient / 16;
+  }
+
+  // nb of zero to output
+  int zero_left = size - hex_size;
+
+  // write hex value to the end
+  while (hex_size >= 0) {
+    hex[size - hex_size - 1] = tmp[hex_size];
+    hex_size--;
+  }
+
+  // complete hex with 0
+  while (zero_left > 0) {
+    hex[zero_left - 1] = '0';
+    zero_left--;
+  }
+
+  free(tmp);
+
+  return hex;
+}
 /*
    This is free and unencumbered software released into the public domain.
    Anyone is free to copy, modify, publish, use, compile, sell, or
@@ -37,7 +99,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#if (defined(_MSC_VER) && defined(__AVX__)) ||                                 \
+#if (defined(_MSC_VER) && defined(__AVX__)) || \
     (!defined(_MSC_VER) && defined(__SSE4_2__))
 #define HASHMAP_SSE42
 #endif
@@ -140,10 +202,9 @@ static int hashmap_remove(struct hashmap_s *const hashmap,
 /// @param len The length of the string key.
 /// @return On success the original stored key pointer is returned, on failure
 /// NULL is returned.
-static const char *
-hashmap_remove_and_return_key(struct hashmap_s *const hashmap,
-                              const char *const key,
-                              const unsigned len) HASHMAP_USED;
+static const char *hashmap_remove_and_return_key(
+    struct hashmap_s *const hashmap, const char *const key,
+    const unsigned len) HASHMAP_USED;
 
 /// @brief Iterate over all the elements in a hashmap.
 /// @param hashmap The hashmap to iterate over.
@@ -171,8 +232,8 @@ static int hashmap_iterate_pairs(struct hashmap_s *const hashmap,
 /// @brief Get the size of the hashmap.
 /// @param hashmap The hashmap to get the size of.
 /// @return The size of the hashmap.
-static unsigned
-hashmap_num_entries(const struct hashmap_s *const hashmap) HASHMAP_USED;
+static unsigned hashmap_num_entries(const struct hashmap_s *const hashmap)
+    HASHMAP_USED;
 
 /// @brief Destroy the hashmap.
 /// @param hashmap The hashmap to destroy.
@@ -189,9 +250,8 @@ static int hashmap_match_helper(const struct hashmap_element_s *const element,
 static int hashmap_hash_helper(const struct hashmap_s *const m,
                                const char *const key, const unsigned len,
                                unsigned *const out_index) HASHMAP_USED;
-static int
-hashmap_rehash_iterator(void *const new_hash,
-                        struct hashmap_element_s *const e) HASHMAP_USED;
+static int hashmap_rehash_iterator(
+    void *const new_hash, struct hashmap_element_s *const e) HASHMAP_USED;
 static int hashmap_rehash_helper(struct hashmap_s *const m) HASHMAP_USED;
 
 #if defined(__cplusplus)
@@ -365,14 +425,14 @@ int hashmap_iterate_pairs(struct hashmap_s *const hashmap,
     if (p->in_use) {
       r = f(context, p);
       switch (r) {
-      case -1: /* remove item */
-        memset(p, 0, sizeof(struct hashmap_element_s));
-        hashmap->size--;
-        break;
-      case 0: /* continue iterating */
-        break;
-      default: /* early exit */
-        return 1;
+        case -1: /* remove item */
+          memset(p, 0, sizeof(struct hashmap_element_s));
+          hashmap->size--;
+          break;
+        case 0: /* continue iterating */
+          break;
+        default: /* early exit */
+          return 1;
       }
     }
   }
@@ -584,3 +644,103 @@ int hashmap_rehash_helper(struct hashmap_s *const m) {
 #endif
 
 #endif
+
+void lzw_compresser(char *fichier, char *mode) {
+  printf("compresser\n");
+  return;
+}
+
+void lzw_decompresser() {
+  printf("decompresser\n");
+  return;
+}
+
+const char *extension_fichier(const char *fichier) {
+  const char *point = strrchr(fichier, '.');
+  if (!point || point == fichier) return "";
+  return point + 1;
+}
+
+int main(int argc, char *argv[]) {
+  // char hexa[256];
+  // char hex[5];
+
+  // // B
+  // char* char_string_c2 = char2str(66);
+  // strcpy(tableau_cles[66], char_string_c2);
+  // char* char_hex2[5];
+  // sprintf(tableau_valeurs[66], "%04x", 66);
+  // printf("char_string_c = %s / tableau_cles[66] = %s / hex = %s\n",
+  //        char_string_c2, tableau_cles[66], tableau_valeurs[66]);
+  // hashmap_put(&hashmap, char_string_c2, strlen(char_string_c2),
+  //             tableau_valeurs[66]);
+  // // P
+  // char* char_string_c3 = char2str(80);
+  // strcpy(tableau_cles[80], char_string_c3);
+  // sprintf(tableau_valeurs[80], "%04x", 80);
+  // printf("char_string_c = %s / tableau_cles[80] = %s / hex = %s\n",
+  //        char_string_c3, tableau_cles[80], tableau_valeurs[80]);
+  // hashmap_put(&hashmap, char_string_c3, strlen(char_string_c3),
+  //             tableau_valeurs[80]);
+
+  // char* element2 = hashmap_get(&hashmap, "B", strlen("B"));
+  // printf("entree %d, cle = %s val = %s\n", 66, "B", element2);
+
+  // char* element3 = hashmap_get(&hashmap, "P", strlen("P"));
+  // printf("entree %d, cle = %s val = %s\n", 80, "P", element3);
+
+  // for (int i = 0; i < 256; i++) {
+  //   char_string_c = char2str(i);
+  //   void* const element = hashmap_get(&hashmap, char_string_c,
+  //   strlen(char_string_c)); if (element) {
+  //     printf("true : %c\n", *(char*)element);
+  //   } else {
+  //     printf("false\n");
+  //   }
+  // }
+
+  char hex2[5];
+  char hex3[5];
+  sprintf(hex2, "%04x", 66);
+  printf("%s\n\n", hex2);
+  sprintf(hex2, "%04x", 80);
+  printf("%s\n\n", hex2);
+
+  /* Test temporaire hashmap */
+  printf("#### Test temporaire hashmap\n");
+  const unsigned taille_initiale = 2;
+  struct hashmap_s hashmap;
+  if (0 != hashmap_create(taille_initiale, &hashmap)) {
+    fprintf(stderr, "Erreur create\n");
+  }
+  char *cle = "hello";
+  int valeur = 23;
+  char *cle2 = "world";
+  int valeur2 = 42;
+  char strings[65536][5];
+  strcpy(strings[0], "0044");
+  strcpy(strings[1], "ff42");
+  printf("strings[0] = %s\n", strings[0]);
+  printf("strings[1] = %s\n", strings[1]);
+  if (0 != hashmap_put(&hashmap, strings[0], strlen(strings[0]), &valeur)) {
+    fprintf(stderr, "Erreur put\n");
+  }
+  if (0 != hashmap_put(&hashmap, strings[1], strlen(strings[1]), &valeur2)) {
+    fprintf(stderr, "Erreur put\n");
+  }
+
+  void *const element = hashmap_get(&hashmap, "0044", strlen("0042"));
+  if (NULL == element) {
+    fprintf(stderr, "Erreur el1\n");
+  } else {
+    printf("%d\n", *(int *)element);
+  }
+  void *const element2 = hashmap_get(&hashmap, strings[1], strlen(strings[1]));
+  if (NULL == element2) {
+    fprintf(stderr, "Erreur el2\n");
+  } else {
+    printf("%d\n", *(int *)element2);
+  }
+
+  return 0;
+}
