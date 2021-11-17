@@ -33,13 +33,13 @@ void lzw_compresser(const char* fichier, const char* mode) {
   }
 
   char* element;
-  char tableau_cles[65536][5];
-  char tableau_valeurs[65536][5];
+  char tableau_cles[65536][9];
+  char tableau_valeurs[65536][9];
   int taille_actuelle_dico = 255;
 
   for (int i = 0; i <= 255; i++) {
     strcpy(tableau_cles[i], char2str(i));
-    sprintf(tableau_valeurs[i], "%04x", i);
+    sprintf(tableau_valeurs[i], "%08x", i);
 
     if (0 != hashmap_put(&hashmap, tableau_cles[i], strlen(tableau_cles[i]),
                          tableau_valeurs[i])) {
@@ -47,6 +47,14 @@ void lzw_compresser(const char* fichier, const char* mode) {
     }
   }
 
+  // // Print all values in hashmap
+  // for (int i = 0; i <= 255; i++) {
+  //   element = hashmap_get(&hashmap, tableau_cles[i],
+  //   strlen(tableau_cles[i])); printf("cle = %s / valeur = %s\n",
+  //   tableau_cles[i], element);
+  // }
+
+  // // Test hashmap
   // char* test = hashmap_get(&hashmap, "A", strlen("B"));
   // if (test) {
   //   printf("Yes : \"%s\"\n\n", test);
@@ -100,7 +108,7 @@ void lzw_compresser(const char* fichier, const char* mode) {
       taille_actuelle_dico++;
 
       strcpy(tableau_cles[taille_actuelle_dico], lecture_P_plus_C);
-      sprintf(tableau_valeurs[taille_actuelle_dico], "%04x",
+      sprintf(tableau_valeurs[taille_actuelle_dico], "%08x",
               taille_actuelle_dico);
 
       hashmap_put(&hashmap, tableau_cles[taille_actuelle_dico],
@@ -156,18 +164,75 @@ void lzw_decompresser(char* fichier, char* mode) {
   }
 
   char* element;
-  char tableau_cles[65536][5];
-  char tableau_valeurs[65536][5];
+  char tableau_cles[65536][9];
+  char tableau_valeurs[65536][9];
   int taille_actuelle_dico = 255;
 
   for (int i = 0; i <= 255; i++) {
-    sprintf(tableau_cles[i], "%04x", i);
+    sprintf(tableau_cles[i], "%08x", i);
     strcpy(tableau_valeurs[i], char2str(i));
 
-    if (0 != hashmap_put(&hashmap, tableau_valeurs[i],
-                         strlen(tableau_valeurs[i]), tableau_cles[i])) {
+    if (0 != hashmap_put(&hashmap, tableau_cles[i], strlen(tableau_cles[i]),
+                         tableau_valeurs[i])) {
       fprintf(stderr, "☢️  Erreur hashmap put\n");
     }
+  }
+
+  // // Algorithme de decompression LZW
+  char lecture_Old[256];
+  char* Old_Translation;
+  char lecture_New[256];
+  char* New_Translation;
+  char* S_Translation;
+  char C_Char;
+
+  /* OLD = first input code */
+  strcpy(lecture_Old, rb_next_int_as_hex(fichier_source));
+  Old_Translation = hashmap_get(&hashmap, lecture_Old, strlen(lecture_Old));
+
+  /* Output translation of OLD */
+  printf("J'output Old = %s\n", Old_Translation);
+  fprintf(fichier_destination, "%s", Old_Translation);
+
+  /* While not end of input stream */
+  /* New = next input code */
+  strcpy(lecture_New, "");
+
+  while (lecture_New != EOF) {
+    /* New = Next input code */
+    strcpy(lecture_New, rb_next_int_as_hex(fichier_source));
+    New_Translation = hashmap_get(&hashmap, lecture_New, strlen(lecture_New));
+
+    /* If New is not in the string table */
+    if (New_Translation == NULL) {
+      /* S = translation of OLD */
+      strcpy(S_Translation, Old_Translation);
+      /* S = S + C */
+      strcpy(S_Translation, concat(S_Translation, char2str(C_Char)));
+    }
+    /* Else */
+    else {
+      strcpy(S_Translation, New_Translation);
+    }
+    /* Output S */
+    fprintf(fichier_destination, "%s", S_Translation);
+
+    /* C = first character of S */
+    C_Char = S_Translation[0];
+
+    /* OLD + C to the string table */
+    taille_actuelle_dico++;
+
+    sprintf(tableau_cles[taille_actuelle_dico], "%08x", taille_actuelle_dico);
+    strcpy(tableau_valeurs[taille_actuelle_dico],
+           concat(Old_Translation, C_Char));
+
+    hashmap_put(&hashmap, tableau_cles[taille_actuelle_dico],
+                strlen(tableau_cles[taille_actuelle_dico]),
+                tableau_valeurs[taille_actuelle_dico]);
+
+    /* OLD = New */
+    strcpy(lecture_Old, lecture_New);
   }
 
   fclose(fichier_source);
