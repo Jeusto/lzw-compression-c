@@ -146,10 +146,10 @@ void lzw_decompresser(char* fichier, char* mode) {
   for (int i = src_name_size - 1; i >= src_name_size - 4; i--) {
     remove_char(nom_fichier_destination, i);
   }
+  strcpy(nom_fichier_destination, concat(nom_fichier_destination, ".txt"));
 
   // Ouvrir le fichier destination
-  FILE* fichier_destination =
-      fopen(concat(nom_fichier_destination, ".txt"), "w");
+  FILE* fichier_destination = fopen(nom_fichier_destination, "w");
 
   // Verifier descripteurs de fichier
   if (fichier_source == NULL || fichier_destination == NULL) {
@@ -178,33 +178,38 @@ void lzw_decompresser(char* fichier, char* mode) {
     }
   }
 
-  // // Algorithme de decompression LZW
+  // Algorithme de decompression LZW
   char lecture_Old[256];
   char* Old_Translation;
   char lecture_New[256];
   char* New_Translation;
-  char* S_Translation;
+  char S_Translation[256];
   char C_Char;
 
   /* OLD = first input code */
   strcpy(lecture_Old, rb_next_int_as_hex(fichier_source));
   Old_Translation = hashmap_get(&hashmap, lecture_Old, strlen(lecture_Old));
+  printf("OLD = first input code : %s => %s\n", lecture_Old, Old_Translation);
 
   /* Output translation of OLD */
-  printf("J'output Old = %s\n", Old_Translation);
-  fprintf(fichier_destination, "%s", Old_Translation);
-
+  printf("J'output la traduction de Old : %s => %s\n", lecture_Old,
+         Old_Translation);
+  fprintf(fichier_destination, Old_Translation);
+  int iterationtest = 0;
   /* While not end of input stream */
-  /* New = next input code */
-  strcpy(lecture_New, "");
-
-  while (lecture_New != EOF) {
+  while (!feof(fichier_source)) {
+    printf("🏅 Iteration = %d\n", iterationtest++);
+    if (iterationtest == 5) {
+      exit(-1);
+    }
     /* New = Next input code */
     strcpy(lecture_New, rb_next_int_as_hex(fichier_source));
     New_Translation = hashmap_get(&hashmap, lecture_New, strlen(lecture_New));
+    printf("NEW = next input code : %s => %s\n", lecture_New, New_Translation);
 
     /* If New is not in the string table */
     if (New_Translation == NULL) {
+      exit(-1);
       /* S = translation of OLD */
       strcpy(S_Translation, Old_Translation);
       /* S = S + C */
@@ -212,32 +217,41 @@ void lzw_decompresser(char* fichier, char* mode) {
     }
     /* Else */
     else {
+      printf("NEW is in the table\n");
+      /* S = translation of OLD */
       strcpy(S_Translation, New_Translation);
+      printf("S = translation of NEW : . => %s\n", S_Translation);
     }
+
     /* Output S */
+    printf("J'affiche S : . => %s\n", S_Translation);
     fprintf(fichier_destination, "%s", S_Translation);
 
     /* C = first character of S */
     C_Char = S_Translation[0];
+    printf("C = premier char de S : %c\n", C_Char);
 
     /* OLD + C to the string table */
     taille_actuelle_dico++;
 
     sprintf(tableau_cles[taille_actuelle_dico], "%08x", taille_actuelle_dico);
     strcpy(tableau_valeurs[taille_actuelle_dico],
-           concat(Old_Translation, C_Char));
+           concat(Old_Translation, char2str(C_Char)));
 
     hashmap_put(&hashmap, tableau_cles[taille_actuelle_dico],
                 strlen(tableau_cles[taille_actuelle_dico]),
                 tableau_valeurs[taille_actuelle_dico]);
+    printf("J'ajoute OLD+C a la table : %s => %s \n",
+           tableau_cles[taille_actuelle_dico],
+           tableau_valeurs[taille_actuelle_dico]);
 
     /* OLD = New */
     strcpy(lecture_Old, lecture_New);
+    printf("OLD = NEW : %s\n", lecture_Old);
   }
 
   fclose(fichier_source);
   fclose(fichier_destination);
-
   return;
 }
 
