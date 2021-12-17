@@ -27,3 +27,4 @@
 - cas du fichier vide
 - cas du tableau superieur a 65356
 - verifier erreurs liees a malloc
+- remettre le bon nom du fichier 

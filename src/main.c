@@ -2,6 +2,100 @@
 
 #define TAILLE_DICT 65536
 
+void compresser_hashmap(FILE* fichier_source, FILE* fichier_destination) {
+  // Initialiser la table avec des des chaines de 1 caractere
+  struct hashmap_s dict;
+  if (0 != hashmap_create(TAILLE_DICT, &dict)) {
+    fprintf(stderr, "Erreur create\n");
+  }
+
+  char* element;
+  char tableau_cles[65536][9];
+  char tableau_valeurs[65536][9];
+  int taille_actuelle_dico = 255;
+
+  for (int i = 0; i <= 255; i++) {
+    strcpy(tableau_cles[i], char2str(i));
+    sprintf(tableau_valeurs[i], "%08X", i);
+
+    if (0 != hashmap_put(&dict, tableau_cles[i], strlen(tableau_cles[i]),
+                         tableau_valeurs[i])) {
+      fprintf(stderr, "☢️  Erreur hashmap put\n");
+    }
+  }
+
+  // Variables utiles pour l'algorithme
+  char cle_P[256] = "";
+  char lecture_char_C;
+  char cle_C[256] = "";
+  char cle_P_plus_C[256] = "";
+  char valeur_P[256] = "";
+  char valeur_P_plus_C[256] = "";
+
+  for (int i = 0; i <= 255; i++) {
+    strcpy(tableau_cles[i], char2str(i));
+    sprintf(tableau_valeurs[i], "%08X", i);
+
+    if (0 != hashmap_put(&dict, tableau_cles[i], strlen(tableau_cles[i]),
+                         tableau_valeurs[i])) {
+      fprintf(stderr, "☢️  Erreur hashmap put\n");
+    }
+  }
+
+  // Print all values in hashmap
+  for (int i = 0; i <= 255; i++) {
+    element = hashmap_get(&dict, tableau_cles[i], strlen(tableau_cles[i]));
+    printf("cle = %s / valeur = %s\n", tableau_cles[i], element);
+  }
+
+  // Algorithme de compression
+
+  // /* P = first input character */
+  // strcpy(cle_P, char2str(fgetc(fichier_source)));
+  // strcpy(valeur_P, recuperer_liste(dict, cle_P));
+
+  // /* While not end of input stream*/
+  // /* C = next input character */
+  // while ((lecture_char_C = fgetc(fichier_source)) != EOF) {
+  //   strcpy(cle_C, char2str(lecture_char_C));
+
+  //   /* If P+C is in the string table */
+
+  //   strcpy(cle_P_plus_C, concat(cle_P, cle_C));
+  //   if ((strcmp(recuperer_liste(dict, cle_P_plus_C), "NULL")) != 0) {
+  //     strcpy(valeur_P_plus_C, recuperer_liste(dict, cle_P_plus_C));
+  //     printf("P+C = %s is in the string table : %s \n", cle_P_plus_C,
+  //            valeur_P_plus_C);
+
+  //     /* P = P + C */
+  //     strcpy(cle_P, concat(cle_P, cle_C));
+
+  //     /* Else */
+  //   } else {
+  //     printf("P+C = %s is not in the string table\n", cle_P_plus_C);
+
+  //     /* Output the code for P */
+  //     strcpy(valeur_P, recuperer_liste(dict, cle_P));
+  //     wb_hex_as_int(fichier_destination, valeur_P);
+  //     printf("Output the code for P : %s : %s\n", cle_P, valeur_P);
+
+  //     /* Add P+C to the string table */
+  //     taille_actuelle_dico++;
+  //     sprintf(valeur_P_plus_C, "%08X", taille_actuelle_dico);
+  //     printf("Add P+C (%s : %s) to the string table at index (%d)\n",
+  //            cle_P_plus_C, valeur_P_plus_C, taille_actuelle_dico);
+  //     inserer_liste(dict, cle_P_plus_C, valeur_P_plus_C);
+
+  //     strcpy(cle_P, cle_C);
+  //   }
+  // }
+
+  // /* Output code for P */
+  // strcpy(valeur_P, recuperer_liste(dict, cle_P));
+  // wb_hex_as_int(fichier_destination, valeur_P);
+  // printf("Output code for P = %s\n", cle_P);
+}
+
 void decompresser_liste(FILE* fichier_source, FILE* fichier_destination) {
   // Initialiser la table avec des des chaines de 1 caractere
   ListeNoeud dict = NULL;
@@ -27,7 +121,7 @@ void decompresser_liste(FILE* fichier_source, FILE* fichier_destination) {
   // Algorithme de compression
 
   /* OLD = first input code */
-  printf("🤬 Debut = %d\n");
+  printf("🤬 Debut\n");
   strcpy(cle_Old, rb_next_int_as_hex(fichier_source));
   strcpy(valeur_Old, recuperer_liste(dict, cle_Old));
   printf("📍OLD = first input code : %s => %s\n", cle_Old, valeur_Old);
@@ -93,7 +187,7 @@ void compresser_liste(FILE* fichier_source, FILE* fichier_destination) {
     char cle[9] = "";
     char valeur[9] = "";
     strcpy(cle, char2str(i));
-    sprintf(valeur, "%08x", i);
+    sprintf(valeur, "%08X", i);
     dict = inserer_liste(dict, cle, valeur);
   }
 
@@ -140,7 +234,7 @@ void compresser_liste(FILE* fichier_source, FILE* fichier_destination) {
 
       /* Add P+C to the string table */
       taille_actuelle_dico++;
-      sprintf(valeur_P_plus_C, "%08x", taille_actuelle_dico);
+      sprintf(valeur_P_plus_C, "%08X", taille_actuelle_dico);
       printf("Add P+C (%s : %s) to the string table at index (%d)\n",
              cle_P_plus_C, valeur_P_plus_C, taille_actuelle_dico);
       inserer_liste(dict, cle_P_plus_C, valeur_P_plus_C);
@@ -189,6 +283,7 @@ void lzw_compresser(const char* fichier, int mode) {
       break;
     case 3:
       printf("Initialisation Hashmap\n");
+      compresser_hashmap(fichier_source, fichier_destination);
     default:
       exit(1);
   }
