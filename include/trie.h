@@ -6,14 +6,14 @@
 
 #define NOMBRE_FILS 256
 
-typedef struct Noeud_Trie {
+typedef struct TrieNoeud {
   bool est_cle_valide;
-  struct Noeud_Trie *fils[NOMBRE_FILS];
-} Noeud_Trie;
+  struct TrieNoeud *fils[NOMBRE_FILS];
+} TrieNoeud;
 
-Noeud_Trie *creer_noeud();
-void liberer_trie(Noeud_Trie *trie);
-void insertion_trie(Noeud_Trie *trie, const char *str);
-bool recherche_trie(Noeud_Trie *trie, const char *str);
+TrieNoeud *creer_noeud();
+void liberer_trie(TrieNoeud *trie);
+void inserer_trie(TrieNoeud *trie, const char *str);
+bool recherche_trie(TrieNoeud *trie, const char *str);
 
 #endif

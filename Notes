@@ -5,3 +5,5 @@
 - ecrire le rapport
 
 * cas du fichier vide
+* on peut rallco tableau de valeurs et cles
+* verifier erreurs liees a malloc

@@ -3,9 +3,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-Noeud_Trie *creer_noeud() {
+TrieNoeud *creer_noeud() {
   // Allouer espace memoire pour le noeud
-  Noeud_Trie *nouveau_noeud = malloc(sizeof(struct Noeud_Trie));
+  TrieNoeud *nouveau_noeud = malloc(sizeof(struct TrieNoeud));
 
   if (nouveau_noeud == NULL) {
     printf("erreur");
@@ -21,15 +21,15 @@ Noeud_Trie *creer_noeud() {
   return nouveau_noeud;
 };
 
-void insertion_trie(Noeud_Trie *trie, const char *str) {
-  // Trie n'existe pas, on le cree
+void inserer_trie(TrieNoeud *trie, const char *str) {
+  // TrieNoeud n'existe pas, on le cree
   if (trie == NULL) {
     trie = creer_noeud();
   }
 
   int index;
   int len = strlen(str);
-  Noeud_Trie *noeud_temporaire = trie;
+  TrieNoeud *noeud_temporaire = trie;
 
   // On insere les characteres un par un
   for (int i = 0; i < len; i++) {
@@ -48,14 +48,14 @@ void insertion_trie(Noeud_Trie *trie, const char *str) {
   return;
 };
 
-bool recherche_trie(Noeud_Trie *trie, const char *str) {
+bool recherche_trie(TrieNoeud *trie, const char *str) {
   if (trie == NULL) {
     return false;
   }
 
   int len = strlen(str);
   unsigned int char_temporaire;
-  Noeud_Trie *noeud_temporaire = trie;
+  TrieNoeud *noeud_temporaire = trie;
 
   // Parcourir les characteres un par un
   for (int i = 0; i < len; i++) {
@@ -71,7 +71,7 @@ bool recherche_trie(Noeud_Trie *trie, const char *str) {
   return (noeud_temporaire != NULL && noeud_temporaire->est_cle_valide);
 };
 
-void liberer_trie(Noeud_Trie *trie) {
+void liberer_trie(TrieNoeud *trie) {
   // Liberer chaque noeud recursivement
   for (int i = 0; i < NOMBRE_FILS; i++) {
     if (trie->fils[i]) {

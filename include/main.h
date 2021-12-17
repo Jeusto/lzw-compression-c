@@ -10,7 +10,7 @@
 
 #include "../include/hashmap.h"
 #include "../include/hex.h"
-#include "../include/liste-chainee.h"
+#include "../include/liste.h"
 #include "../include/trie.h"
 #include "../include/utils.h"
 
@@ -21,4 +21,4 @@
  * @param argv : Les arguments
  * @return int : 0 si le programme a reussi
  */
-int main(int argc, char* argv[]);
+int main(int argc, char *argv[]);

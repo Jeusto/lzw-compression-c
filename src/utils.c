@@ -52,7 +52,7 @@ char *char2str(const char c) {
 bool wb_hex_as_short(FILE *fp, char *hex) {
   unsigned short bin = (unsigned short)hex2dec(hex);
   // true if fwrite wrote one elt, false otherwise
-  return fwrite(&bin, sizeof(unsigned int), 1, fp) == 1;
+  return fwrite(&bin, sizeof(unsigned short), 1, fp) == 1;
 }
 
 /**
