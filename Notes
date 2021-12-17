@@ -1,9 +1,29 @@
-- finir l'implementation
-- gerer les erreurs
-- faire tests de performances et de validite
-- rendre le code plus propre et commente
-- ecrire le rapport
+/** A faire **/
+1.
+- Finir implementation avec liste chainee
+- Gerer les fuites de memoire & erreurs possibles
 
-* cas du fichier vide
-* on peut rallco tableau de valeurs et cles
-* verifier erreurs liees a malloc
+- Ecrire le debut du rapport
+
+- Faire l'implementation avec hashmap
+- Gerer les fuites de memoire & erreurs
+
+- Faire l'implementation avec trie
+- Gerer les fuites de memoire & erreurs
+
+- Rendre le code plus propre et jolie
+- Bien commenter le code
+
+- Ajouter des tests
+- Evaluer les performances
+- Finir le rapport
+
+- Dernieres verifications
+- Archiver et deposer sur Moodle
+
+
+
+/** Notes et rappels **/ 
+- cas du fichier vide
+- cas du tableau superieur a 65356
+- verifier erreurs liees a malloc

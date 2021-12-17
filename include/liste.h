@@ -5,8 +5,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#define TAILLE_MOT 4
-
 typedef struct liste_noeud {
   char *cle;
   char *valeur;

@@ -9,7 +9,7 @@ void decompresser_liste(FILE* fichier_source, FILE* fichier_destination) {
   for (int i = 0; i < 256; i++) {
     char cle[9] = "";
     char valeur[9] = "";
-    sprintf(cle, "%08x", i);
+    sprintf(cle, "%08X", i);
     strcpy(valeur, char2str(i));
     dict = inserer_liste(dict, cle, valeur);
   }
@@ -17,75 +17,71 @@ void decompresser_liste(FILE* fichier_source, FILE* fichier_destination) {
   // Variables utiles pour l'algorithme
   char* element;
   int taille_actuelle_dico = 255;
-  char lecture_Old[256] = "";
-  char Old_Translation[256] = "";
-  char lecture_New[256] = "";
-  char New_Translation[256] = "";
-  char S_Translation[256] = "";
-  char C_Char;
+  char cle_Old[256] = "";
+  char valeur_Old[256] = "";
+  char cle_New[256] = "";
+  char valeur_New[256] = "";
+  char valeur_S[256] = "";
+  char char_C;
 
   // Algorithme de compression
 
   /* OLD = first input code */
-  strcpy(lecture_Old, rb_next_int_as_hex(fichier_source));
-  strcpy(Old_Translation, recuperer_liste(dict, lecture_Old));
-  printf("OLD = first input code : %s => %s\n", lecture_Old, Old_Translation);
+  printf("🤬 Debut = %d\n");
+  strcpy(cle_Old, rb_next_int_as_hex(fichier_source));
+  strcpy(valeur_Old, recuperer_liste(dict, cle_Old));
+  printf("📍OLD = first input code : %s => %s\n", cle_Old, valeur_Old);
 
   /* Output translation of OLD */
-  printf("Output translation of OLD => %s\n", Old_Translation);
-  fprintf(fichier_destination, "%s", Old_Translation);
+  printf("🛂 Output valeur de OLD\n");
+  fprintf(fichier_destination, "%s", valeur_Old);
 
   /* While not end of input stream */
   int iteration = 0;
-  while (!feof(fichier_source)) {
-    printf("While not end of input stream\n");
+  while (1) {
     printf("🏅 Iteration = %d\n", iteration++);
 
     /* NEW = Next input code */
-    strcpy(lecture_New, rb_next_short_as_hex(fichier_source));
-    if (strcmp(recuperer_liste(dict, lecture_New), "NULL") == 0) {
-      break;
+    char* new = rb_next_int_as_hex(fichier_source);
+    if (new == NULL) exit(1);  // Fin
+    strcpy(cle_New, new);
+    printf("NEW = next input code : %s : %s\n", cle_New,
+           recuperer_liste(dict, cle_New));
+    if (strcmp(recuperer_liste(dict, cle_New), "NULL") == 0) {
+      printf("🛂  NEW is not in the string table\n");
+      /* S = translation of OLD + C */
+      strcpy(valeur_S, concat(valeur_Old, char2str(char_C)));
+      printf("S = translation of OLD + C : %s\n", valeur_S);
     } else {
-      strcpy(New_Translation, recuperer_liste(dict, lecture_New));
-    }
-    printf("NEW = next input code : %s => %s\n", lecture_New, New_Translation);
-
-    /* If NEW is not in the string table */
-    printf("If NEW is not in the string table\n");
-    if (New_Translation == NULL) {
-      printf("NEW is not in the string table\n");
-      /* S = translation of OLD */
-      strcpy(S_Translation, Old_Translation);
-      /* S = S + C */
-      strcpy(S_Translation, concat(S_Translation, char2str(C_Char)));
-    }
-    /* Else */
-    else {
-      printf("NEW is in the table\n");
+      printf("🛂  NEW is in the string table\n");
       /* S = translation of NEW */
-      strcpy(S_Translation, New_Translation);
-      printf("S = translation of NEW : . => %s\n", S_Translation);
+      strcpy(valeur_New, recuperer_liste(dict, cle_New));
+      strcpy(valeur_S, valeur_New);
+      printf("S = translation of NEW : . => %s\n", valeur_S);
     }
 
     /* Output S */
-    printf("OUTPUT S : . => %s\n", S_Translation);
-    fprintf(fichier_destination, "%s", S_Translation);
+    printf("Output S : . => %s\n", valeur_S);
+    fprintf(fichier_destination, "%s", valeur_S);
 
     /* C = first character of S */
-    C_Char = S_Translation[0];
-    printf("C = premier char de S : %c\n", C_Char);
+    char_C = valeur_S[0];
+    printf("C = premier char de S : %c\n", char_C);
 
     /* OLD + C to the string table */
     taille_actuelle_dico++;
-    printf("OLD + C to the table : %c\n", C_Char);
 
     char cle_old_c[256] = "";
-    sprintf(cle_old_c, "%08x", taille_actuelle_dico);
-    inserer_liste(dict, cle_old_c, concat(Old_Translation, char2str(C_Char)));
+    sprintf(cle_old_c, "%08X", taille_actuelle_dico);
+    inserer_liste(dict, cle_old_c, concat(valeur_Old, char2str(char_C)));
+
+    printf("OLD + C  (%s : %s), ajouter a la table a l'indice %d\n", cle_old_c,
+           concat(valeur_Old, char2str(char_C)), taille_actuelle_dico);
 
     /* OLD = New */
-    strcpy(lecture_Old, lecture_New);
-    printf("OLD = NEW : %s\n", lecture_Old);
+    strcpy(cle_Old, cle_New);
+    strcpy(valeur_Old, recuperer_liste(dict, cle_Old));
+    printf("OLD = NEW : %s => %s\n", cle_Old, valeur_Old);
   }
 }
 
@@ -123,9 +119,10 @@ void compresser_liste(FILE* fichier_source, FILE* fichier_destination) {
     strcpy(cle_C, char2str(lecture_char_C));
 
     /* If P+C is in the string table */
+
     strcpy(cle_P_plus_C, concat(cle_P, cle_C));
-    strcpy(valeur_P_plus_C, recuperer_liste(dict, cle_P_plus_C));
-    if (!(strcmp(valeur_P_plus_C, "NULL") == 0)) {
+    if ((strcmp(recuperer_liste(dict, cle_P_plus_C), "NULL")) != 0) {
+      strcpy(valeur_P_plus_C, recuperer_liste(dict, cle_P_plus_C));
       printf("P+C = %s is in the string table : %s \n", cle_P_plus_C,
              valeur_P_plus_C);
 
