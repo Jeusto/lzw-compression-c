@@ -7,6 +7,23 @@
 
 #include "hex.h"
 
+#define CHK(op)       \
+  do {                \
+    if ((op) == -1) { \
+      raler(1, #op);  \
+    }                 \
+  } while (0)
+
+noreturn void raler(int syserr, const char *signal, ...) {
+  va_list ap;
+  va_start(ap, signal);
+  vfprintf(stderr, signal, ap);
+  fprintf(stderr, "\n");
+  va_end(ap);
+  if (syserr == 1) perror("");
+  exit(EXIT_FAILURE);
+}
+
 size_t ascii_to_index(char c);
 void remove_char(char *word, size_t index);
 void parse_word(char *word);
