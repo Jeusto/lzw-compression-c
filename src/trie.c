@@ -3,6 +3,22 @@
 #include <limits.h>
 #include <stdlib.h>
 #include <string.h>
+
+void liberer_trie(TrieNoeud trie) {
+  if (trie == NULL) {
+    return;
+  }
+
+  for (int i = 0; i < NOMBRE_FILS; i++) {
+    liberer_trie(trie->fils[i]);
+  }
+
+  if (trie->valeur) {
+    free(trie->valeur);
+  }
+  free(trie);
+}
+
 TrieNoeud creer_noeud() {
   // Allouer espace memoire pour le noeud
   TrieNoeud nouveau_noeud =
@@ -76,15 +92,13 @@ char *recuperer_trie(TrieNoeud trie, char *cle) {
   }
 };
 
-void liberer_trie(TrieNoeud trie) {
-  // Liberer chaque noeud recursivement
-  for (int i = 0; i < NOMBRE_FILS; i++) {
-    if (trie->fils[i]) {
-      liberer_trie(trie->fils[i]);
-    }
-  }
-
-  free(trie);
-
-  return;
-}
+// void liberer_trie(TrieNoeud trie) {
+//  Liberer chaque noeud recursivement
+// for (int i = 0; i < NOMBRE_FILS; i++) {
+//  if (trie->fils[i]) {
+//   liberer_trie(trie->fils[i]);
+//}
+//}
+// free(trie);
+// return;
+//}

@@ -4,18 +4,8 @@
 #define TAILLE_MAX_HEXA_STRING 32
 #define TAILLE_MAX_STRING 64
 
-void compresser_trie(FILE* fichier_source, FILE* fichier_destination) {
-  // Initialiser la table avec des des chaines de 1 caractere
-  TrieNoeud dict = creer_noeud();
-
-  for (int i = 0; i < 256; i++) {
-    char cle[TAILLE_MAX_STRING] = "";
-    char valeur[TAILLE_MAX_HEXA_STRING] = "";
-    strcpy(cle, char2str(i));
-    sprintf(valeur, "%08X", i);
-    inserer_trie(dict, cle, valeur);
-  }
-
+void compresser_trie(TrieNoeud dict, FILE* fichier_source,
+                     FILE* fichier_destination) {
   // Variables utiles pour l'algorithme
   char* element;
   int taille_actuelle_dico = 255;
@@ -75,18 +65,8 @@ void compresser_trie(FILE* fichier_source, FILE* fichier_destination) {
   printf("Output code for P = %s\n", cle_P);
 }
 
-void decompresser_trie(FILE* fichier_source, FILE* fichier_destination) {
-  // Initialiser la table avec des des chaines de 1 caractere
-  TrieNoeud dict = NULL;
-
-  for (int i = 0; i < 256; i++) {
-    char cle[TAILLE_MAX_HEXA_STRING] = "";
-    char valeur[TAILLE_MAX_STRING] = "";
-    sprintf(cle, "%08X", i);
-    strcpy(valeur, char2str(i));
-    inserer_trie(dict, cle, valeur);
-  }
-
+void decompresser_trie(TrieNoeud dict, FILE* fichier_source,
+                       FILE* fichier_destination) {
   // Variables utiles pour l'algorithme
   char* element;
   int taille_actuelle_dico = 255;
@@ -246,6 +226,8 @@ void compresser_hashmap(FILE* fichier_source, FILE* fichier_destination) {
   strcpy(valeur_P, hashmap_get(&dict, cle_P, strlen(cle_P)));
   wb_hex_as_int(fichier_destination, valeur_P);
   printf("Output code for P = %s\n", cle_P);
+
+  hashmap_destroy(&dict);
 }
 
 void decompresser_hashmap(FILE* fichier_source, FILE* fichier_destination) {
@@ -345,18 +327,8 @@ void decompresser_hashmap(FILE* fichier_source, FILE* fichier_destination) {
   }
 }
 
-void decompresser_liste(FILE* fichier_source, FILE* fichier_destination) {
-  // Initialiser la table avec des des chaines de 1 caractere
-  ListeNoeud dict = NULL;
-
-  for (int i = 0; i < 256; i++) {
-    char cle[TAILLE_MAX_HEXA_STRING] = "";
-    char valeur[TAILLE_MAX_STRING] = "";
-    sprintf(cle, "%08X", i);
-    strcpy(valeur, char2str(i));
-    dict = inserer_liste(dict, cle, valeur);
-  }
-
+void decompresser_liste(ListeNoeud dict, FILE* fichier_source,
+                        FILE* fichier_destination) {
   // Variables utiles pour l'algorithme
   char* element;
   int taille_actuelle_dico = 255;
@@ -428,19 +400,10 @@ void decompresser_liste(FILE* fichier_source, FILE* fichier_destination) {
   }
 }
 
-void compresser_liste(FILE* fichier_source, FILE* fichier_destination) {
-  // Initialiser la table avec des des chaines de 1 caractere
-  ListeNoeud dict = NULL;
-
-  for (int i = 0; i < 256; i++) {
-    char cle[TAILLE_MAX_STRING] = "";
-    char valeur[TAILLE_MAX_HEXA_STRING] = "";
-    strcpy(cle, char2str(i));
-    sprintf(valeur, "%08X", i);
-    dict = inserer_liste(dict, cle, valeur);
-  }
-
+void compresser_liste(ListeNoeud dict, FILE* fichier_source,
+                      FILE* fichier_destination) {
   // Variables utiles pour l'algorithme
+
   char* element;
   int taille_actuelle_dico = 255;
   char cle_P[TAILLE_MAX_STRING] = "";
@@ -526,11 +489,30 @@ void lzw_compresser(const char* fichier, int mode) {
   switch (mode) {
     case 1:
       printf("Initialisation Liste\n");
-      compresser_liste(fichier_source, fichier_destination);
+      ListeNoeud dict_l = NULL;
+      for (int i = 0; i < 256; i++) {
+        char cle[TAILLE_MAX_STRING] = "";
+        char valeur[TAILLE_MAX_HEXA_STRING] = "";
+        strcpy(cle, char2str(i));
+        sprintf(valeur, "%08X", i);
+        dict_l = inserer_liste(dict_l, cle, valeur);
+      }
+      compresser_liste(dict_l, fichier_source, fichier_destination);
+      liberer_liste(dict_l);
       break;
     case 2:
       printf("Initialisation TrieNoeud\n");
-      compresser_trie(fichier_source, fichier_destination);
+      // Initialiser la table avec des des chaines de 1 caractere
+      TrieNoeud dict_t = creer_noeud();
+      for (int i = 0; i < 256; i++) {
+        char cle[TAILLE_MAX_STRING] = "";
+        char valeur[TAILLE_MAX_HEXA_STRING] = "";
+        strcpy(cle, char2str(i));
+        sprintf(valeur, "%08X", i);
+        inserer_trie(dict_t, cle, valeur);
+      }
+      compresser_trie(dict_t, fichier_source, fichier_destination);
+      liberer_trie(dict_t);
       break;
     case 3:
       printf("Initialisation Hashmap\n");
@@ -571,11 +553,34 @@ void lzw_decompresser(const char* fichier, int mode) {
   switch (mode) {
     case 1:
       printf("Initialisation Liste\n");
-      decompresser_liste(fichier_source, fichier_destination);
+      // Initialiser la table avec des des chaines de 1 caractere
+      ListeNoeud dict_l = NULL;
+
+      for (int i = 0; i < 256; i++) {
+        char cle[TAILLE_MAX_HEXA_STRING] = "";
+        char valeur[TAILLE_MAX_STRING] = "";
+        sprintf(cle, "%08X", i);
+        strcpy(valeur, char2str(i));
+        dict_l = inserer_liste(dict_l, cle, valeur);
+      }
+      decompresser_liste(dict_l, fichier_source, fichier_destination);
+      liberer_liste(dict_l);
       break;
     case 2:
       printf("Initialisation Trie\n");
-      decompresser_trie(fichier_source, fichier_destination);
+      // Initialiser la table avec des des chaines de 1 caractere
+      TrieNoeud dict_t = creer_noeud();
+
+      for (int i = 0; i < 256; i++) {
+        char cle[TAILLE_MAX_HEXA_STRING] = "";
+        char valeur[TAILLE_MAX_STRING] = "";
+        sprintf(cle, "%08X", i);
+        strcpy(valeur, char2str(i));
+        inserer_trie(dict_t, cle, valeur);
+      }
+
+      decompresser_trie(dict_t, fichier_source, fichier_destination);
+      liberer_trie(dict_t);
       break;
     case 3:
       printf("Initialisation Hashmap\n");

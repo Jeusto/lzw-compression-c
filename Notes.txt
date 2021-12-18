@@ -1,14 +1,8 @@
 /** A faire **/
-- Finir implementation avec liste chainee
 - Gerer les fuites de memoire & erreurs possibles
+- Gerer les limites et fichiers superieur a la taille du table
 
 - Ecrire le debut du rapport
-
-- Faire l'implementation avec hashmap
-- Gerer les fuites de memoire & erreurs
-
-- Faire l'implementation avec trie
-- Gerer les fuites de memoire & erreurs
 
 - Rendre le code plus propre et jolie
 - Bien commenter le code

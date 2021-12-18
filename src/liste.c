@@ -4,13 +4,15 @@
 #include <string.h>
 
 void liberer_liste(ListeNoeud liste) {
-  ListeNoeud tmp = liste;
-  while (tmp != NULL) {
-    ListeNoeud tmp2 = tmp;
-    tmp = tmp->prochain;
-    free(tmp2->cle);
-    free(tmp2->valeur);
-    free(tmp2);
+  printf("liberer_liste\n");
+  ListeNoeud actuel = liste;
+  ListeNoeud prochain;
+  while (actuel != NULL) {
+    prochain = actuel->prochain;
+    free(actuel->cle);
+    free(actuel->valeur);
+    free(actuel);
+    actuel = prochain;
   }
 }
 
