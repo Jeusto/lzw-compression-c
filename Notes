@@ -1,5 +1,7 @@
 /** A faire **/
+
 1.
+
 - Finir implementation avec liste chainee
 - Gerer les fuites de memoire & erreurs possibles
 
@@ -21,10 +23,18 @@
 - Dernieres verifications
 - Archiver et deposer sur Moodle
 
+/** Notes et rappels **/
 
-
-/** Notes et rappels **/ 
 - cas du fichier vide
 - cas du tableau superieur a 65356
 - verifier erreurs liees a malloc
-- remettre le bon nom du fichier 
+- remettre le bon nom du fichier
+
+rm -rf tests/lorem-h2.lzw tests/lorem-h2.txt tests/lorem-l2.lzw tests/lorem-l2.txt
+clear && make && ./bin/lzw -h tests/lorem-h.txt ; ./bin/lzw -l tests/lorem-l.txt  
+cmp tests/lorem-h2.lzw tests/lorem-l2.lzw
+cmp tests/lorem-h2.txt tests/lorem-l2.txt
+
+./bin/lzw -l tests/lorem-l.txt ; ./bin/lzw -l tests/lorem-l2.lzw ; cmp tests/lorem-l.txt tests/lorem-l2.txt
+
+make && ./bin/lzw -l tests/lorem-l.txt ; ./bin/lzw -l tests/lorem-l2.lzw ; ./bin/lzw -h tests/lorem-h.txt ; ./bin/lzw -h tests/lorem-h2.lzw ; cmp tests/lorem-l2.txt tests/lorem-h2.txt
