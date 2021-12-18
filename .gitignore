@@ -1,7 +1,6 @@
 /.vscode
 *.exe
 tempCodeRunnerFile.c
-valgrind-out.txt
 bin
 obj
 doc

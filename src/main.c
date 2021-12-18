@@ -416,24 +416,29 @@ void compresser_liste(ListeNoeud dict, FILE* fichier_source,
   // Algorithme de compression
 
   /* P = first input character */
-  strcpy(cle_P, char2str(fgetc(fichier_source)));
+  char* concatstr2 = char2str(fgetc(fichier_source));
+  strcpy(cle_P, concatstr2);
   strcpy(valeur_P, recuperer_liste(dict, cle_P));
+  free(concatstr2);
 
   /* While not end of input stream*/
   /* C = next input character */
   while ((lecture_char_C = fgetc(fichier_source)) != EOF) {
-    strcpy(cle_C, char2str(lecture_char_C));
+    char* concatstr2 = char2str(lecture_char_C);
+    strcpy(cle_C, concatstr2);
+    free(concatstr2);
 
     /* If P+C is in the string table */
-
-    strcpy(cle_P_plus_C, concat(cle_P, cle_C));
+    char* concatstr;
+    concatstr = concat(cle_P, cle_C);
+    strcpy(cle_P_plus_C, concatstr);
     if ((strcmp(recuperer_liste(dict, cle_P_plus_C), "NULL")) != 0) {
       strcpy(valeur_P_plus_C, recuperer_liste(dict, cle_P_plus_C));
       printf("P+C = %s is in the string table : %s \n", cle_P_plus_C,
              valeur_P_plus_C);
 
       /* P = P + C */
-      strcpy(cle_P, concat(cle_P, cle_C));
+      strcpy(cle_P, concatstr);
 
       /* Else */
     } else {
@@ -454,6 +459,7 @@ void compresser_liste(ListeNoeud dict, FILE* fichier_source,
       /* P = C */
       strcpy(cle_P, cle_C);
     }
+    free(concatstr);
   }
 
   /* Output code for P */
@@ -477,8 +483,9 @@ void lzw_compresser(const char* fichier, int mode) {
   }
 
   // Ouvrir le fichier destination
-  FILE* fichier_destination =
-      fopen(concat(nom_fichier_destination, "2.lzw"), "wb");
+  char* nouveau_nom = concat(nom_fichier_destination, "2.lzw");
+  FILE* fichier_destination = fopen(nouveau_nom, "wb");
+  free(nouveau_nom);
 
   // Verifier descripteurs de fichier
   if (fichier_source == NULL || fichier_destination == NULL) {
@@ -493,7 +500,9 @@ void lzw_compresser(const char* fichier, int mode) {
       for (int i = 0; i < 256; i++) {
         char cle[TAILLE_MAX_STRING] = "";
         char valeur[TAILLE_MAX_HEXA_STRING] = "";
-        strcpy(cle, char2str(i));
+        char* charstr = char2str(i);
+        strcpy(cle, charstr);
+        free(charstr);
         sprintf(valeur, "%08X", i);
         dict_l = inserer_liste(dict_l, cle, valeur);
       }
