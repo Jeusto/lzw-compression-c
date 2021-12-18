@@ -20,9 +20,8 @@ void liberer_trie(TrieNoeud trie) {
 }
 
 TrieNoeud creer_noeud() {
-  // Allouer espace memoire pour le noeud
-  TrieNoeud nouveau_noeud =
-      (struct liste_noeud *)malloc(sizeof(struct trie_noeud));
+  // On alloue l'espace memoire pour le noeud
+  TrieNoeud nouveau_noeud = malloc(sizeof(struct trie_noeud));
 
   if (nouveau_noeud == NULL) {
     printf("erreur");

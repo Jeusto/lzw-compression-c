@@ -1,18 +1,11 @@
 /** A faire **/
-- Gerer les fuites de memoire & erreurs possibles
-- Gerer les limites et fichiers superieur a la taille du table
-
-- Ecrire le debut du rapport
-
-- Rendre le code plus propre et jolie
-- Bien commenter le code
-
-- Ajouter des tmp
-- Evaluer les performances
-- Finir le rapport
-
-- Dernieres verificationsyo8
-- Archiver et deposer sur Moodle
+- Corriger warning max stack frame (tableau alloue trop grand ?)
+- Faire fonctionner le clear code pour les gros fichiers 
+- Harmoniser code (utiliser tableau de cles et valeurs comme pr hashmap)
+- Bien commenter le code, rendre le code plus propre et jolie
+- Test.sh pour tester le fonctionnement et evaluer performances
+- Rapport de projet
+- Dernieres verifications, archive + depot Moodle
 
 /** Notes et rappels **/
 - cas du fichier vide
@@ -20,34 +13,37 @@
 - verifier erreurs liees a malloc
 - remettre le bon nom du fichier
 - codes de retours
+- fermer les descripteurs et free malloc si exit(EXIT_FAILURE) ? 
+- ne pas envoyer le .git hidden folder
 
 /** Tests ** /
-
 - Test de fonctionnalite & erreurs & memoire
-1) Fichier qui existe pas
-2) Arguments (trop d'arguments, trop peu d'arguments, argument incorrects, trop d'arguments)
-3) On lance avec un fichier de taillle moyenne sur les 3 types de structure, on compare leurs resultats.
-3) Test memoire avec valgrind
 
 - Test de performances
-1) 3 fichiers: 1 vide, 1 court, 1 moyen, 1 long, 1 avec que les memes caracteres
-
+3 fichiers: 1 vide, 1 court, 1 moyen, 1 long, 1 avec que les memes caracteres
 
 
 /** Autre **/
 make && 
-./bin/lzw -l tmp/lorem-l.txt ; 
-./bin/lzw -h tmp/lorem-h.txt ; 
-./bin/lzw -t tmp/lorem-t.txt ; 
+./bin/lzw -s liste-chainee tmp/lorem-l.txt ; 
+./bin/lzw -s trie tmp/lorem-h.txt ; 
+./bin/lzw -s hashmap tmp/lorem-t.txt ; 
 cmp tmp/lorem-l2.lzw tmp/lorem-h2.lzw ; 
 cmp tmp/lorem-l2.lzw tmp/lorem-t2.lzw ; 
 cmp tmp/lorem-h2.lzw tmp/lorem-t2.lzw ; 
 
-
 make && 
-./bin/lzw -l tmp/lorem-l2.lzw ; 
-./bin/lzw -h tmp/lorem-h2.lzw ; 
-./bin/lzw -t tmp/lorem-t2.lzw ;
+./bin/lzw -s liste-chainee tmp/lorem-l2.lzw ; 
+./bin/lzw -s trie tmp/lorem-h2.lzw ; 
+./bin/lzw -s hashmap tmp/lorem-t2.lzw ;
 cmp tmp/lorem-l2.txt tmp/lorem-h2.txt ; 
 cmp tmp/lorem-l2.txt tmp/lorem-t2.txt ; 
 cmp tmp/lorem-h2.txt tmp/lorem-t2.txt
+
+
+
+
+
+
+
+

@@ -5,8 +5,7 @@ OBJDIR	:= ./obj
 SRCDIR 	:= ./src
 
 # Options de compilation
-# TODO: Ajouter -Werror et -Wextra a la fin et enlever les -Wno
-CFLAGS = -g -Wall -Wno-unused-variable -O2 -std=c99
+CFLAGS = -g -Wall -Werror -Wextra -O2 -std=c99
 CC 	= gcc
 EXEC = $(BINDIR)/lzw
 
@@ -29,10 +28,9 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.c
 	mkdir -p $(OBJDIR)
 	$(CC) -o $@ -c $< $(CFLAGS)
 
-# TODO
-valgrind: 
-	@echo "Retrouver le résultat de Valgrind dans le fichier valgrind-results.txt"
-	@valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose --log-file=valgrind-results.txt $(EXEC) 
+# valgrind: 
+# 	@echo "Retrouver le résultat de Valgrind dans le fichier valgrind-results.txt"
+# 	@valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose --log-file=valgrind-results.txt $(EXEC) 
 
 test: $(EXEC_FILE)
 	LC_MESSAGES=fr_FR.UTF-8 ./test.sh
