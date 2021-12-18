@@ -28,14 +28,13 @@ void inserer_trie(TrieNoeud trie, char *cle, char *valeur) {
   if (trie == NULL) {
     trie = creer_noeud();
   }
-  // printf("%s : %s\n", cle, valeur);
-  unsigned index;
-  unsigned len = strlen(cle);
+  unsigned int index;
+  unsigned int len = strlen(cle);
   TrieNoeud noeud_temporaire = trie;
-  int j = 0;
+
   // On insere les characteres un par un
   for (unsigned int i = 0; i < len; i++) {
-    index = (unsigned char)cle[0];
+    index = (unsigned char)cle[i];
 
     if (noeud_temporaire->fils[index] == NULL) {
       noeud_temporaire->fils[index] = creer_noeud();
@@ -48,20 +47,20 @@ void inserer_trie(TrieNoeud trie, char *cle, char *valeur) {
   noeud_temporaire->est_cle_valide = true;
   noeud_temporaire->valeur = malloc(strlen(valeur) + 1);
   strcpy(noeud_temporaire->valeur, valeur);
-};
+}
 
 char *recuperer_trie(TrieNoeud trie, char *cle) {
   if (trie == NULL) {
     return false;
   }
 
-  int len = strlen(cle);
+  unsigned int len = strlen(cle);
   unsigned int char_temporaire;
   TrieNoeud noeud_temporaire = trie;
 
   // Parcourir les characteres un par un
-  for (int i = 0; i < len; i++) {
-    char_temporaire = cle[i];
+  for (unsigned int i = 0; i < len; i++) {
+    char_temporaire = (unsigned char)cle[i];
     // On a trouve null alors que la chaine de caracteres n'est pas fini
     if (noeud_temporaire->fils[char_temporaire] == NULL) {
       return "NULL";

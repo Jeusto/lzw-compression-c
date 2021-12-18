@@ -1,8 +1,8 @@
 #include "../include/main.h"
 
 #define TAILLE_DICT 65536
-#define TAILLE_MAX_HEXA_STRING 9
-#define TAILLE_MAX_STRING 256
+#define TAILLE_MAX_HEXA_STRING 32
+#define TAILLE_MAX_STRING 64
 
 void compresser_trie(FILE* fichier_source, FILE* fichier_destination) {
   // Initialiser la table avec des des chaines de 1 caractere
@@ -75,7 +75,88 @@ void compresser_trie(FILE* fichier_source, FILE* fichier_destination) {
   printf("Output code for P = %s\n", cle_P);
 }
 
-void decompresser_trie(FILE* fichier_source, FILE* fichier_destination) {}
+void decompresser_trie(FILE* fichier_source, FILE* fichier_destination) {
+  // Initialiser la table avec des des chaines de 1 caractere
+  TrieNoeud dict = NULL;
+
+  for (int i = 0; i < 256; i++) {
+    char cle[TAILLE_MAX_HEXA_STRING] = "";
+    char valeur[TAILLE_MAX_STRING] = "";
+    sprintf(cle, "%08X", i);
+    strcpy(valeur, char2str(i));
+    inserer_trie(dict, cle, valeur);
+  }
+
+  // Variables utiles pour l'algorithme
+  char* element;
+  int taille_actuelle_dico = 255;
+  char cle_Old[TAILLE_MAX_HEXA_STRING] = "";
+  char valeur_Old[TAILLE_MAX_HEXA_STRING] = "";
+  char cle_New[TAILLE_MAX_HEXA_STRING] = "";
+  char valeur_New[TAILLE_MAX_HEXA_STRING] = "";
+  char valeur_S[TAILLE_MAX_HEXA_STRING] = "";
+  char char_C;
+
+  // Algorithme de decompression
+
+  /* OLD = first input code */
+  printf("🤬 Debut\n");
+  strcpy(cle_Old, rb_next_int_as_hex(fichier_source));
+  strcpy(valeur_Old, recuperer_trie(dict, cle_Old));
+  printf("📍OLD = first input code : %s => %s\n", cle_Old, valeur_Old);
+
+  /* Output translation of OLD */
+  printf("🛂 Output valeur de OLD\n");
+  fprintf(fichier_destination, "%s", valeur_Old);
+
+  /* While not end of input stream */
+  int iteration = 0;
+  while (1) {
+    printf("🏅 Iteration = %d\n", iteration++);
+
+    /* NEW = Next input code */
+    char* new = rb_next_int_as_hex(fichier_source);
+    if (new == NULL) exit(1);  // Fin
+    strcpy(cle_New, new);
+    printf("NEW = next input code : %s : %s\n", cle_New,
+           recuperer_trie(dict, cle_New));
+    if (strcmp(recuperer_trie(dict, cle_New), "NULL") == 0) {
+      printf("🛂  NEW is not in the string table\n");
+      /* S = translation of OLD + C */
+      strcpy(valeur_S, concat(valeur_Old, char2str(char_C)));
+      printf("S = translation of OLD + C : %s\n", valeur_S);
+    } else {
+      printf("🛂  NEW is in the string table\n");
+      /* S = translation of NEW */
+      strcpy(valeur_New, recuperer_trie(dict, cle_New));
+      strcpy(valeur_S, valeur_New);
+      printf("S = translation of NEW : . => %s\n", valeur_S);
+    }
+
+    /* Output S */
+    printf("Output S : . => %s\n", valeur_S);
+    fprintf(fichier_destination, "%s", valeur_S);
+
+    /* C = first character of S */
+    char_C = valeur_S[0];
+    printf("C = premier char de S : %c\n", char_C);
+
+    /* OLD + C to the string table */
+    taille_actuelle_dico++;
+
+    char cle_old_c[TAILLE_MAX_HEXA_STRING] = "";
+    sprintf(cle_old_c, "%08X", taille_actuelle_dico);
+    inserer_trie(dict, cle_old_c, concat(valeur_Old, char2str(char_C)));
+
+    printf("OLD + C  (%s : %s), ajouter a la table a l'indice %d\n", cle_old_c,
+           concat(valeur_Old, char2str(char_C)), taille_actuelle_dico);
+
+    /* OLD = New */
+    strcpy(cle_Old, cle_New);
+    strcpy(valeur_Old, recuperer_trie(dict, cle_Old));
+    printf("OLD = NEW : %s => %s\n", cle_Old, valeur_Old);
+  }
+}
 
 void compresser_hashmap(FILE* fichier_source, FILE* fichier_destination) {
   // Initialiser la table avec des des chaines de 1 caractere
@@ -91,7 +172,6 @@ void compresser_hashmap(FILE* fichier_source, FILE* fichier_destination) {
 
   for (int i = 0; i <= 255; i++) {
     strcpy(tableau_cles[i], char2str(i));
-    exit(0);
 
     sprintf(tableau_valeurs[i], "%08X", i);
 
@@ -108,16 +188,6 @@ void compresser_hashmap(FILE* fichier_source, FILE* fichier_destination) {
   char cle_P_plus_C[TAILLE_MAX_STRING] = "";
   char* valeur_P;
   char* valeur_P_plus_C;
-
-  for (int i = 0; i <= 255; i++) {
-    strcpy(tableau_cles[i], char2str(i));
-    sprintf(tableau_valeurs[i], "%08X", i);
-
-    if (0 != hashmap_put(&dict, tableau_cles[i], strlen(tableau_cles[i]),
-                         tableau_valeurs[i])) {
-      fprintf(stderr, "☢️  Erreur hashmap put\n");
-    }
-  }
 
   // Print all values in hashmap
   // for (int i = 0; i <= 255; i++) {

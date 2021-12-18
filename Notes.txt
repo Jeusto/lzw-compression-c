@@ -13,7 +13,7 @@
 - Rendre le code plus propre et jolie
 - Bien commenter le code
 
-- Ajouter des tests
+- Ajouter des tmp
 - Evaluer les performances
 - Finir le rapport
 
@@ -40,11 +40,13 @@
 
 
 /** Autre **/
-rm -rf tests/lorem-h2.lzw tests/lorem-h2.txt tests/lorem-l2.lzw tests/lorem-l2.txt
-clear && make && ./bin/lzw -h tests/lorem-h.txt ; ./bin/lzw -l tests/lorem-l.txt  
-cmp tests/lorem-h2.lzw tests/lorem-l2.lzw
-cmp tests/lorem-h2.txt tests/lorem-l2.txt
+rm -rf tmp/lorem-h2.lzw tmp/lorem-h2.txt tmp/lorem-l2.lzw tmp/lorem-l2.txt
+clear && make && ./bin/lzw -h tmp/lorem-h.txt ; ./bin/lzw -l tmp/lorem-l.txt  
+cmp tmp/lorem-h2.lzw tmp/lorem-l2.lzw
+cmp tmp/lorem-h2.txt tmp/lorem-l2.txt
 
-./bin/lzw -l tests/lorem-l.txt ; ./bin/lzw -l tests/lorem-l2.lzw ; cmp tests/lorem-l.txt tests/lorem-l2.txt
+./bin/lzw -l tmp/lorem-l.txt ; ./bin/lzw -l tmp/lorem-l2.lzw ; cmp tmp/lorem-l.txt tmp/lorem-l2.txt
 
-make && ./bin/lzw -l tests/lorem-l.txt ; ./bin/lzw -l tests/lorem-l2.lzw ; ./bin/lzw -h tests/lorem-h.txt ; ./bin/lzw -h tests/lorem-h2.lzw ; cmp tests/lorem-l2.txt tests/lorem-h2.txt
+
+
+make && ./bin/lzw -l tmp/lorem-l.txt ; ./bin/lzw -h tmp/lorem-h.txt ; ./bin/lzw -t tmp/lorem-t.txt ; ./bin/lzw -l tmp/lorem-l2.lzw ; ./bin/lzw -h tmp/lorem-h2.lzw ; ./bin/lzw -t tmp/lorem-t2.lzw ; cmp tmp/lorem-l2.txt tmp/lorem-h2.txt ; cmp tmp/lorem-l2.txt tmp/lorem-t2.txt ; cmp tmp/lorem-h2.txt tmp/lorem-t2.txt
