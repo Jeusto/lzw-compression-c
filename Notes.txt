@@ -1,7 +1,4 @@
 /** A faire **/
-
-1.
-
 - Finir implementation avec liste chainee
 - Gerer les fuites de memoire & erreurs possibles
 
@@ -24,12 +21,25 @@
 - Archiver et deposer sur Moodle
 
 /** Notes et rappels **/
-
 - cas du fichier vide
 - cas du tableau superieur a 65356
 - verifier erreurs liees a malloc
 - remettre le bon nom du fichier
 
+/** Tests ** /
+
+- Test de fonctionnalite & erreurs & memoire
+1) Fichier qui existe pas
+2) Arguments (trop d'arguments, trop peu d'arguments, argument incorrects, trop d'arguments)
+3) On lance avec un fichier de taillle moyenne sur les 3 types de structure, on compare leurs resultats.
+3) Test memoire avec valgrind
+
+- Test de performances
+1) 3 fichiers: 1 vide, 1 court, 1 moyen, 1 long, 1 avec que les memes caracteres
+
+
+
+/** Autre **/
 rm -rf tests/lorem-h2.lzw tests/lorem-h2.txt tests/lorem-l2.lzw tests/lorem-l2.txt
 clear && make && ./bin/lzw -h tests/lorem-h.txt ; ./bin/lzw -l tests/lorem-l.txt  
 cmp tests/lorem-h2.lzw tests/lorem-l2.lzw

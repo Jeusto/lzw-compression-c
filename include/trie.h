@@ -8,14 +8,13 @@
 
 typedef struct trie_noeud {
   bool est_cle_valide;
-  struct trie_noeud *fils[NOMBRE_FILS];
   char *valeur;
-
+  struct trie_noeud *fils[NOMBRE_FILS];
 } * TrieNoeud;
 
 TrieNoeud creer_noeud();
 void liberer_trie(TrieNoeud trie);
-void inserer_trie(TrieNoeud trie, const *str);
-bool recherche_trie(TrieNoeud trie, const *str);
+void inserer_trie(TrieNoeud trie, char *cle, char *valeur);
+char *recuperer_trie(TrieNoeud trie, char *cle);
 
 #endif

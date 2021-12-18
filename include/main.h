@@ -3,6 +3,7 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdnoreturn.h>
 #include <string.h>
 #include <sys/stat.h>
 #include <time.h>

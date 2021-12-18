@@ -1,11 +1,12 @@
 #include "../include/trie.h"
 
+#include <limits.h>
 #include <stdlib.h>
 #include <string.h>
-
 TrieNoeud creer_noeud() {
   // Allouer espace memoire pour le noeud
-  TrieNoeud nouveau_noeud = malloc(sizeof(struct trie_noeud));
+  TrieNoeud nouveau_noeud =
+      (struct liste_noeud *)malloc(sizeof(struct trie_noeud));
 
   if (nouveau_noeud == NULL) {
     printf("erreur");
@@ -17,23 +18,24 @@ TrieNoeud creer_noeud() {
   for (size_t i = 0; i < NOMBRE_FILS; i++) {
     nouveau_noeud->fils[i] = NULL;
   }
+  nouveau_noeud->valeur = NULL;
 
   return nouveau_noeud;
 };
 
-void inserer_trie(TrieNoeud trie, const char *str) {
+void inserer_trie(TrieNoeud trie, char *cle, char *valeur) {
   // TrieNoeud n'existe pas, on le cree
   if (trie == NULL) {
     trie = creer_noeud();
   }
-
-  int index;
-  int len = strlen(str);
+  // printf("%s : %s\n", cle, valeur);
+  unsigned index;
+  unsigned len = strlen(cle);
   TrieNoeud noeud_temporaire = trie;
-
+  int j = 0;
   // On insere les characteres un par un
-  for (int i = 0; i < len; i++) {
-    index = str[i];
+  for (unsigned int i = 0; i < len; i++) {
+    index = (unsigned char)cle[0];
 
     if (noeud_temporaire->fils[index] == NULL) {
       noeud_temporaire->fils[index] = creer_noeud();
@@ -44,31 +46,35 @@ void inserer_trie(TrieNoeud trie, const char *str) {
 
   // L'enchainement de caracteres est maintenant valide
   noeud_temporaire->est_cle_valide = true;
-
-  return;
+  noeud_temporaire->valeur = malloc(strlen(valeur) + 1);
+  strcpy(noeud_temporaire->valeur, valeur);
 };
 
-bool recherche_trie(TrieNoeud trie, const char *str) {
+char *recuperer_trie(TrieNoeud trie, char *cle) {
   if (trie == NULL) {
     return false;
   }
 
-  int len = strlen(str);
+  int len = strlen(cle);
   unsigned int char_temporaire;
   TrieNoeud noeud_temporaire = trie;
 
   // Parcourir les characteres un par un
   for (int i = 0; i < len; i++) {
-    char_temporaire = str[i];
+    char_temporaire = cle[i];
     // On a trouve null alors que la chaine de caracteres n'est pas fini
     if (noeud_temporaire->fils[char_temporaire] == NULL) {
-      return false;
+      return "NULL";
     }
     noeud_temporaire = noeud_temporaire->fils[char_temporaire];
   }
 
   // Si le dernier charactere existe et qu'il est valide, on a trouve
-  return (noeud_temporaire != NULL && noeud_temporaire->est_cle_valide);
+  if (noeud_temporaire != NULL && noeud_temporaire->est_cle_valide) {
+    return noeud_temporaire->valeur;
+  } else {
+    return "NULL";
+  }
 };
 
 void liberer_trie(TrieNoeud trie) {

@@ -1,10 +1,79 @@
 #include "../include/main.h"
 
 #define TAILLE_DICT 65536
+#define TAILLE_MAX_HEXA_STRING 9
+#define TAILLE_MAX_STRING 256
 
-void compresser_trie(FILE* fichier_source, FILE* fichier_destination) {}
+void compresser_trie(FILE* fichier_source, FILE* fichier_destination) {
+  // Initialiser la table avec des des chaines de 1 caractere
+  TrieNoeud dict = creer_noeud();
 
-void decompresser_trie(FILE* fichier_source, FILE* fichier_destination) {}
+  for (int i = 0; i < 256; i++) {
+    char cle[TAILLE_MAX_STRING] = "";
+    char valeur[TAILLE_MAX_HEXA_STRING] = "";
+    strcpy(cle, char2str(i));
+    sprintf(valeur, "%08X", i);
+    inserer_trie(dict, cle, valeur);
+  }
+
+  // Variables utiles pour l'algorithme
+  char* element;
+  int taille_actuelle_dico = 255;
+  char cle_P[TAILLE_MAX_STRING] = "";
+  char lecture_char_C;
+  char cle_C[TAILLE_MAX_STRING] = "";
+  char cle_P_plus_C[TAILLE_MAX_STRING] = "";
+  char valeur_P[TAILLE_MAX_STRING] = "";
+  char valeur_P_plus_C[TAILLE_MAX_STRING] = "";
+
+  // Algorithme de compression
+
+  /* P = first input character */
+  strcpy(cle_P, char2str(fgetc(fichier_source)));
+  strcpy(valeur_P, recuperer_trie(dict, cle_P));
+
+  /* While not end of input stream*/
+  /* C = next input character */
+  while ((lecture_char_C = fgetc(fichier_source)) != EOF) {
+    strcpy(cle_C, char2str(lecture_char_C));
+
+    /* If P+C is in the string table */
+    strcpy(cle_P_plus_C, concat(cle_P, cle_C));
+
+    if ((strcmp(recuperer_trie(dict, cle_P_plus_C), "NULL")) != 0) {
+      strcpy(valeur_P_plus_C, recuperer_trie(dict, cle_P_plus_C));
+      printf("P+C = %s is in the string table : %s \n", cle_P_plus_C,
+             valeur_P_plus_C);
+
+      /* P = P + C */
+      strcpy(cle_P, concat(cle_P, cle_C));
+
+      /* Else */
+    } else {
+      printf("P+C = %s is not in the string table\n", cle_P_plus_C);
+
+      /* Output the code for P */
+      strcpy(valeur_P, recuperer_trie(dict, cle_P));
+      wb_hex_as_int(fichier_destination, valeur_P);
+      printf("Output the code for P : %s : %s\n", cle_P, valeur_P);
+
+      /* Add P+C to the string table */
+      taille_actuelle_dico++;
+      sprintf(valeur_P_plus_C, "%08X", taille_actuelle_dico);
+      printf("Add P+C (%s : %s) to the string table at index (%d)\n",
+             cle_P_plus_C, valeur_P_plus_C, taille_actuelle_dico);
+      inserer_trie(dict, cle_P_plus_C, valeur_P_plus_C);
+
+      /* P = C */
+      strcpy(cle_P, cle_C);
+    }
+  }
+
+  /* Output code for P */
+  strcpy(valeur_P, recuperer_trie(dict, cle_P));
+  wb_hex_as_int(fichier_destination, valeur_P);
+  printf("Output code for P = %s\n", cle_P);
+}
 
 void decompresser_trie(FILE* fichier_source, FILE* fichier_destination) {}
 
@@ -16,12 +85,14 @@ void compresser_hashmap(FILE* fichier_source, FILE* fichier_destination) {
   }
 
   char* element;
-  char tableau_cles[65536][9];
-  char tableau_valeurs[65536][9];
+  char tableau_cles[65536][TAILLE_MAX_STRING];
+  char tableau_valeurs[65536][TAILLE_MAX_HEXA_STRING];
   int taille_actuelle_dico = 255;
 
   for (int i = 0; i <= 255; i++) {
     strcpy(tableau_cles[i], char2str(i));
+    exit(0);
+
     sprintf(tableau_valeurs[i], "%08X", i);
 
     if (0 != hashmap_put(&dict, tableau_cles[i], strlen(tableau_cles[i]),
@@ -31,10 +102,10 @@ void compresser_hashmap(FILE* fichier_source, FILE* fichier_destination) {
   }
 
   // Variables utiles pour l'algorithme
-  char cle_P[256] = "";
+  char cle_P[TAILLE_MAX_STRING] = "";
   char lecture_char_C;
-  char cle_C[256] = "";
-  char cle_P_plus_C[256] = "";
+  char cle_C[TAILLE_MAX_STRING] = "";
+  char cle_P_plus_C[TAILLE_MAX_STRING] = "";
   char* valeur_P;
   char* valeur_P_plus_C;
 
@@ -115,8 +186,8 @@ void decompresser_hashmap(FILE* fichier_source, FILE* fichier_destination) {
   }
 
   char* element;
-  char tableau_cles[65536][9];
-  char tableau_valeurs[65536][9];
+  char tableau_cles[65536][TAILLE_MAX_HEXA_STRING];
+  char tableau_valeurs[65536][TAILLE_MAX_STRING];
   int taille_actuelle_dico = 255;
 
   for (int i = 0; i <= 255; i++) {
@@ -130,11 +201,11 @@ void decompresser_hashmap(FILE* fichier_source, FILE* fichier_destination) {
   }
 
   // Variables utiles pour l'algorithme
-  char cle_Old[256] = "";
+  char cle_Old[TAILLE_MAX_HEXA_STRING] = "";
   char* valeur_Old;
-  char cle_New[256] = "";
+  char cle_New[TAILLE_MAX_HEXA_STRING] = "";
   char* valeur_New;
-  char valeur_S[256] = "";
+  char valeur_S[TAILLE_MAX_HEXA_STRING] = "";
   char char_C;
 
   // Algorithme de decompression
@@ -209,8 +280,8 @@ void decompresser_liste(FILE* fichier_source, FILE* fichier_destination) {
   ListeNoeud dict = NULL;
 
   for (int i = 0; i < 256; i++) {
-    char cle[9] = "";
-    char valeur[9] = "";
+    char cle[TAILLE_MAX_HEXA_STRING] = "";
+    char valeur[TAILLE_MAX_STRING] = "";
     sprintf(cle, "%08X", i);
     strcpy(valeur, char2str(i));
     dict = inserer_liste(dict, cle, valeur);
@@ -219,11 +290,11 @@ void decompresser_liste(FILE* fichier_source, FILE* fichier_destination) {
   // Variables utiles pour l'algorithme
   char* element;
   int taille_actuelle_dico = 255;
-  char cle_Old[256] = "";
-  char valeur_Old[256] = "";
-  char cle_New[256] = "";
-  char valeur_New[256] = "";
-  char valeur_S[256] = "";
+  char cle_Old[TAILLE_MAX_HEXA_STRING] = "";
+  char valeur_Old[TAILLE_MAX_HEXA_STRING] = "";
+  char cle_New[TAILLE_MAX_HEXA_STRING] = "";
+  char valeur_New[TAILLE_MAX_HEXA_STRING] = "";
+  char valeur_S[TAILLE_MAX_HEXA_STRING] = "";
   char char_C;
 
   // Algorithme de decompression
@@ -273,7 +344,7 @@ void decompresser_liste(FILE* fichier_source, FILE* fichier_destination) {
     /* OLD + C to the string table */
     taille_actuelle_dico++;
 
-    char cle_old_c[256] = "";
+    char cle_old_c[TAILLE_MAX_HEXA_STRING] = "";
     sprintf(cle_old_c, "%08X", taille_actuelle_dico);
     inserer_liste(dict, cle_old_c, concat(valeur_Old, char2str(char_C)));
 
@@ -292,8 +363,8 @@ void compresser_liste(FILE* fichier_source, FILE* fichier_destination) {
   ListeNoeud dict = NULL;
 
   for (int i = 0; i < 256; i++) {
-    char cle[9] = "";
-    char valeur[9] = "";
+    char cle[TAILLE_MAX_STRING] = "";
+    char valeur[TAILLE_MAX_HEXA_STRING] = "";
     strcpy(cle, char2str(i));
     sprintf(valeur, "%08X", i);
     dict = inserer_liste(dict, cle, valeur);
@@ -302,12 +373,12 @@ void compresser_liste(FILE* fichier_source, FILE* fichier_destination) {
   // Variables utiles pour l'algorithme
   char* element;
   int taille_actuelle_dico = 255;
-  char cle_P[256] = "";
+  char cle_P[TAILLE_MAX_STRING] = "";
   char lecture_char_C;
-  char cle_C[256] = "";
-  char cle_P_plus_C[256] = "";
-  char valeur_P[256] = "";
-  char valeur_P_plus_C[256] = "";
+  char cle_C[TAILLE_MAX_STRING] = "";
+  char cle_P_plus_C[TAILLE_MAX_STRING] = "";
+  char valeur_P[TAILLE_MAX_STRING] = "";
+  char valeur_P_plus_C[TAILLE_MAX_STRING] = "";
 
   // Algorithme de compression
 
