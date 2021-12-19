@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Messages d'erreur avec la langue francaise
+# Il faut avoir la langue francaise pour les messages d'erreur
 if [ -z `locale -a | grep fr_FR.utf8` ]; then
     echo "Erreur - installez la langue fr_FR.utf8 pour lancer les tests"
     exit 1
@@ -8,6 +8,7 @@ fi
 
 PROG="./lzw"
 TMP="./tmp"
+ASSETS="./assets"
 
 # Teste vide
 check_empty ()
@@ -18,6 +19,7 @@ check_empty ()
     
     return 1
 }
+
 
 # Teste echec du programme
 # - Code de retour du pg doit etre egal a 1
@@ -43,6 +45,7 @@ check_echec()
     return 1
 }
 
+
 # Teste si le pg a reussi
 # - Code de retour du pg doit etre egal a 0
 # - Stdout et stderr doivent etre vides
@@ -62,6 +65,7 @@ check_success()
     return 1
 }
 
+
 # Compare deux fichiers avec la commande cmp
 cmp_fichiers()
 {
@@ -78,6 +82,8 @@ cmp_fichiers()
     
     return 1
 }
+
+
 
 test_1()
 {
@@ -109,9 +115,9 @@ test_1()
     echo "OK"
 }
 
+
 test_2 ()
 {
-
     echo "Test 2 - test sur les fichiers (mode $MODE)"
 
     echo -n "Test 2.1 - fichier vide..........................."
@@ -121,7 +127,7 @@ test_2 ()
     if check_success $?;                                 then return 1; fi
     echo "OK"
 
-    echo -n "Test 2.2 - fichier extremement court................"
+    echo -n "Test 2.2 - fichier extremement court.............."
     base64 /dev/urandom | head -c 10 > $TMP/titi22.txt ;
     cp $TMP/titi22.txt $TMP/toto22.txt ;
     $PROG -s $MODE $TMP/toto22.txt                  > $TMP/stdout 2> $TMP/stderr
@@ -132,6 +138,7 @@ test_2 ()
     echo "OK"
 
     echo -n "Test 2.3 - fichier tres court....................."
+    # texte de 100 octets généré automatiquement
     base64 /dev/urandom | head -c 100 > $TMP/titi23.txt ;
     cp $TMP/titi23.txt $TMP/toto23.txt ;
     $PROG -s $MODE $TMP/toto23.txt                  > $TMP/stdout 2> $TMP/stderr
@@ -142,6 +149,7 @@ test_2 ()
     echo "OK"
 
     echo -n "Test 2.4 - fichier court.........................."
+    # texte de 1000 octets généré automatiquement
     base64 /dev/urandom | head -c 1000 > $TMP/titi24.txt ;
     cp $TMP/titi24.txt $TMP/toto24.txt ;
     $PROG -s $MODE $TMP/toto24.txt                  > $TMP/stdout 2> $TMP/stderr
@@ -152,6 +160,7 @@ test_2 ()
     echo "OK"
 
     echo -n "Test 2.5 - fichier moyen.........................."
+    # texte de 10000 octets généré automatiquement
     base64 /dev/urandom | head -c 10000 > $TMP/titi25.txt ;
     cp $TMP/titi25.txt $TMP/toto25.txt ;
     $PROG -s $MODE $TMP/toto25.txt                  > $TMP/stdout 2> $TMP/stderr
@@ -162,6 +171,7 @@ test_2 ()
     echo "OK"
 
     echo -n "Test 2.6 - fichier long..........................."
+    # texte de 100000 octets généré automatiquement
     base64 /dev/urandom | head -c 100000 > $TMP/titi26.txt ;
     cp $TMP/titi26.txt $TMP/toto26.txt ;
     $PROG -s $MODE $TMP/toto26.txt                  > $TMP/stdout 2> $TMP/stderr
@@ -172,7 +182,7 @@ test_2 ()
     echo "OK"
 
     echo -n "Test 2.7 - fichier tres long......................"
-    head -c 250000 ./tests/the-adventures-of-sherlock-holmes.txt > $TMP/titi27.txt ;    
+    head -c 250000 $ASSETS/the-adventures-of-sherlock-holmes.txt > $TMP/titi27.txt ;    
     cp $TMP/titi27.txt $TMP/toto27.txt ;
     $PROG -s $MODE $TMP/toto27.txt                  > $TMP/stdout 2> $TMP/stderr
     if check_success $?;                                 then return 1; fi
@@ -182,7 +192,7 @@ test_2 ()
     echo "OK"
 
     echo -n "Test 2.8 - fichier extremement long..............."
-    head -c 500000 ./tests/the-adventures-of-sherlock-holmes.txt > $TMP/titi28.txt ;
+    head -c 500000 $ASSETS/the-adventures-of-sherlock-holmes.txt > $TMP/titi28.txt ;
     cp $TMP/titi28.txt $TMP/toto28.txt ;
     $PROG -s $MODE $TMP/toto28.txt                  > $TMP/stdout 2> $TMP/stderr
     if check_success $?;                                 then return 1; fi
@@ -192,18 +202,10 @@ test_2 ()
     echo "OK"
 }
 
-# test_2 ()
-# {
 
-#     echo "Test 3 - divers tests"
 
-#     echo -n "Test 2.1 - compression ..........................."
-#     touch $TMP/titi21.txt ;
 
-# } 
-
-# Lance les series de tests de fonctionnement
-
+# Lancement les séries de tests de fonctionnement
 rm -R $TMP
 mkdir $TMP
 MODE="hashmap"

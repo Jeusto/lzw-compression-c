@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Messages d'erreur avec la langue francaise
+# Il faut avoir la langue francaise pour les messages d'erreur
 if [ -z `locale -a | grep fr_FR.utf8` ]; then
     echo "Erreur - installez la langue fr_FR.utf8 pour lancer les tests"
     exit 1
@@ -8,6 +8,7 @@ fi
 
 PROG="./lzw"
 TMP="./tmp"
+TESTS="./resultats-tests"
 
 # Teste vide
 check_empty ()
@@ -79,7 +80,8 @@ cmp_fichiers()
     return 1
 }
 
-test_1 ()
+# Effectue des tests de performances sur plusieurs longueurs de fichiers et enregistre les moyennes dans un fichier 
+test_perf ()
 {    
     echo "\nTest de performance sur les fichiers (mode $MODE)\n"
     tempsPris=0
@@ -88,7 +90,7 @@ test_1 ()
 
 
 
-    for I in $(seq 1 5)
+    for I in $(seq 1 1)
       do
         touch $TMP/titi21.txt ;
         touch $TMP/toto21.txt ;
@@ -113,7 +115,7 @@ test_1 ()
 
 
 
-    for I in $(seq 1 5)
+    for I in $(seq 1 1)
       do
         base64 /dev/urandom | head -c 10 > $TMP/titi22.txt ;
         cp $TMP/titi22.txt $TMP/toto22.txt ;
@@ -138,7 +140,7 @@ test_1 ()
 
 
 
-    for I in $(seq 1 5)
+    for I in $(seq 1 1)
       do
         base64 /dev/urandom | head -c 100 > $TMP/titi23.txt ;
         cp $TMP/titi23.txt $TMP/toto23.txt ;
@@ -158,12 +160,12 @@ test_1 ()
     done < tmp/temps.time
 
     echo "\nTemps moyenne pour fichier tres court(mode $MODE): $moyenne\n"
-    echo "100 $moyenne" >> "./resultats-tests/$MODE.time"
+    echo "100 $moyenne" >> "$TESTS/$MODE.time"
 
 
 
 
-    for I in $(seq 1 5)
+    for I in $(seq 1 1)
       do
         base64 /dev/urandom | head -c 1000 > $TMP/titi24.txt ;
         cp $TMP/titi24.txt $TMP/toto24.txt ;
@@ -188,7 +190,7 @@ test_1 ()
 
 
 
-    for I in $(seq 1 5)
+    for I in $(seq 1 1)
       do
         base64 /dev/urandom | head -c 10000 > $TMP/titi25.txt ;
         cp $TMP/titi25.txt $TMP/toto25.txt ;
@@ -213,7 +215,7 @@ test_1 ()
 
 
 
-    for I in $(seq 1 5)
+    for I in $(seq 1 1)
       do
         base64 /dev/urandom | head -c 100000 > $TMP/titi26.txt ;
         cp $TMP/titi26.txt $TMP/toto26.txt ;
@@ -237,7 +239,7 @@ test_1 ()
 
 
 
-    for I in $(seq 1 5)
+    for I in $(seq 1 1)
       do
         head -c 250000 ./assets/the-adventures-of-sherlock-holmes.txt > $TMP/titi27.txt ;    
         cp $TMP/titi27.txt $TMP/toto27.txt ;
@@ -262,7 +264,7 @@ test_1 ()
 
 
 
-    for I in $(seq 1 5)
+    for I in $(seq 1 1)
       do
         head -c 500000 ./assets/the-adventures-of-sherlock-holmes.txt > $TMP/titi28.txt ;
         cp $TMP/titi28.txt $TMP/toto28.txt ;
@@ -288,41 +290,32 @@ test_1 ()
 rm -R $TMP
 mkdir $TMP
 MODE="hashmap"
-for T in $(seq 1)
-do
-    if test_$T; then
-        echo "== Test performances avec $MODE : OK ✅\n"
-    else
-        echo "== Test performances avec $MODE : ECHEC 🤬"
-        return 1
-    fi
-done
+if test_perf; then
+    echo "== Test performances avec $MODE : OK ✅\n"
+else
+    echo "== Test performances avec $MODE : ECHEC 🤬"
+    return 1
+fi
+
 
 rm -R $TMP
 mkdir $TMP
 MODE="trie"
-for T in $(seq 1)
-do
-    if test_$T; then
-        echo "== Test performances avec $MODE : OK ✅\n"
-    else
-        echo "== Test performances avec $MODE : ECHEC 🤬"
-        return 1
-    fi
-done
+if test_perf; then
+    echo "== Test performances avec $MODE : OK ✅\n"
+else
+    echo "== Test performances avec $MODE : ECHEC 🤬"
+    return 1
+fi
 
 rm -R $TMP
 mkdir $TMP
 MODE="liste-chainee"
-for T in $(seq 1)
-do
-    if test_$T; then
-        echo "== Test performances avec $MODE : OK ✅\n"
-    else
-        echo "== Test  performances avec $MODE : ECHEC 🤬"
-        return 1
-    fi
-done
-
+if test_perf; then
+    echo "== Test performances avec $MODE : OK ✅\n"
+else
+    echo "== Test  performances avec $MODE : ECHEC 🤬"
+    return 1
+fi
 
 rm -R $TMP

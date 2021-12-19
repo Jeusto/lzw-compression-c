@@ -16,6 +16,7 @@
 #define TAILLE_MAX_HEXA_STRING 9
 #define TAILLE_MAX_STRING 64
 
+// Fonction appelé lorsque l'utilisateur veut compresser un fichier
 void lzw_compresser(const char* fichier, int mode) {
   // Ouvrir le fichier source
   FILE* fichier_source = fopen(fichier, "r");
@@ -47,6 +48,7 @@ void lzw_compresser(const char* fichier, int mode) {
   }
   fseek(fichier_source, 0L, SEEK_SET);
 
+  // On appelle la bonne fonction en fonction du mode
   switch (mode) {
     case 1: {
       // Initialiser le dictionnaire avec les 256 premiers cles/valeurs
@@ -90,6 +92,7 @@ void lzw_compresser(const char* fichier, int mode) {
   return;
 }
 
+// Fonction appelé lorsque l'utilisateur veut compresser un fichier
 void lzw_decompresser(const char* fichier, int mode) {
   // Ouvrir le fichier source
   FILE* fichier_source = fopen(fichier, "rb");
@@ -168,7 +171,7 @@ int main(int argc, char* argv[]) {
   bool s_flag = false;
   int c;
 
-  // On verifie les arguments
+  // On vérifie les arguments
   while ((c = getopt(argc, argv, "s:")) != -1) switch (c) {
       case 's':
         s_flag = true;
