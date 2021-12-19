@@ -155,19 +155,18 @@ void compresser_trie(TrieNoeud dict, FILE* fichier_source,
 
       /* P = C */
       strcpy(cle_P, cle_C);
+    }
+    if (taille_actuelle_dico == TAILLE_DICT - 2) {
+      /* Output code for P */
+      strcpy(valeur_P, recuperer_trie(dict, cle_P));
+      wb_hex_as_short(fichier_destination, valeur_P);
+      printf("Output code for P = %s\n", cle_P);
 
-      if (taille_actuelle_dico == TAILLE_DICT - 2) {
-        /* Output code for P */
-        strcpy(valeur_P, recuperer_trie(dict, cle_P));
-        wb_hex_as_short(fichier_destination, valeur_P);
-        printf("Output code for P = %s\n", cle_P);
-
-        printf("DICTIONNAIRE PLEIN\n");
-        liberer_trie(dict);
-        dict = initialiser_trie("compression");
-        compresser_trie(dict, fichier_source, fichier_destination);
-        return;
-      }
+      printf("DICTIONNAIRE PLEIN\n");
+      liberer_trie(dict);
+      dict = initialiser_trie("compression");
+      compresser_trie(dict, fichier_source, fichier_destination);
+      return;
     }
   }
 
@@ -351,31 +350,30 @@ void compresser_hashmap(FILE* fichier_source, FILE* fichier_destination,
 
       /* P = C */
       strcpy(cle_P, cle_C);
+    }
 
-      if (taille_actuelle_dico == TAILLE_DICT - 2) {
-        /* Output code for P */
-        strcpy(valeur_P, hashmap_get(&dict, cle_P, strlen(cle_P)));
-        wb_hex_as_short(fichier_destination, valeur_P);
-        printf("Output code for P = %s\n", cle_P);
+    if (taille_actuelle_dico == TAILLE_DICT - 2) {
+      /* Output code for P */
+      strcpy(valeur_P, hashmap_get(&dict, cle_P, strlen(cle_P)));
+      wb_hex_as_short(fichier_destination, valeur_P);
+      printf("Output code for P = %s\n", cle_P);
 
-        printf("DICTIONNAIRE MAX\n");
-        liberer_dictionnaire_hashmap(&dict, tableau_cles, tableau_valeurs);
-        char** tableau_cles = malloc(TAILLE_DICT * TAILLE_MAX_STRING);
-        for (int i = 0; i < TAILLE_DICT; i++) {
-          tableau_cles[i] = malloc(TAILLE_MAX_STRING);
-        }
-        char** tableau_valeurs = malloc(TAILLE_DICT * TAILLE_MAX_HEXA_STRING);
-        for (int i = 0; i < TAILLE_DICT; i++) {
-          tableau_valeurs[i] = malloc(TAILLE_MAX_HEXA_STRING);
-        }
-        dict =
-            initialiser_hashmap("compression", tableau_cles, tableau_valeurs);
-
-        compresser_hashmap(fichier_source, fichier_destination, dict,
-                           tableau_cles, tableau_valeurs);
-
-        return;
+      printf("DICTIONNAIRE MAX\n");
+      liberer_dictionnaire_hashmap(&dict, tableau_cles, tableau_valeurs);
+      char** tableau_cles = malloc(TAILLE_DICT * TAILLE_MAX_STRING);
+      for (int i = 0; i < TAILLE_DICT; i++) {
+        tableau_cles[i] = malloc(TAILLE_MAX_STRING);
       }
+      char** tableau_valeurs = malloc(TAILLE_DICT * TAILLE_MAX_HEXA_STRING);
+      for (int i = 0; i < TAILLE_DICT; i++) {
+        tableau_valeurs[i] = malloc(TAILLE_MAX_HEXA_STRING);
+      }
+      dict = initialiser_hashmap("compression", tableau_cles, tableau_valeurs);
+
+      compresser_hashmap(fichier_source, fichier_destination, dict,
+                         tableau_cles, tableau_valeurs);
+
+      return;
     }
   }
 
@@ -458,6 +456,8 @@ void decompresser_hashmap(FILE* fichier_source, FILE* fichier_destination,
       char* charstr2 = concat(valeur_Old, charstr);
       strcpy(valeur_S, charstr2);
       printf("S = translation of OLD + C : %s\n", valeur_S);
+      free(charstr);
+      free(charstr2);
     } else {
       printf("🛂  NEW is in the string table\n");
       /* S = translation of NEW */
@@ -561,18 +561,18 @@ void compresser_liste(ListeNoeud dict, FILE* fichier_source,
 
       /* P = C */
       strcpy(cle_P, cle_C);
-      if (taille_actuelle_dico == TAILLE_DICT - 2) {
-        /* Output code for P */
-        strcpy(valeur_P, recuperer_liste(dict, cle_P));
-        wb_hex_as_short(fichier_destination, valeur_P);
-        printf("Output code for P = %s\n", cle_P);
+    }
+    if (taille_actuelle_dico == TAILLE_DICT - 2) {
+      /* Output code for P */
+      strcpy(valeur_P, recuperer_liste(dict, cle_P));
+      wb_hex_as_short(fichier_destination, valeur_P);
+      printf("Output code for P = %s\n", cle_P);
 
-        printf("DICTIONNAIRE PLEIN\n");
-        liberer_liste(dict);
-        dict = initialiser_liste("compression");
-        compresser_liste(dict, fichier_source, fichier_destination);
-        return;
-      }
+      printf("DICTIONNAIRE PLEIN\n");
+      liberer_liste(dict);
+      dict = initialiser_liste("compression");
+      compresser_liste(dict, fichier_source, fichier_destination);
+      return;
     }
   }
 
