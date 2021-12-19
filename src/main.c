@@ -38,7 +38,7 @@ void lzw_compresser(const char* fichier, int mode) {
     raler(0, "erreur ouverture: %s", fichier);
   }
 
-  // Si le fichier source est vide, on quitte tout de suite
+  // Si le fichier source est vide, on quitte tout de suite apres avoir cree
   fseek(fichier_source, 0L, SEEK_END);
   if (ftell(fichier_source) == 0) {
     fclose(fichier_source);
@@ -206,15 +206,16 @@ int main(int argc, char* argv[]) {
     }
     // Cas 2: il n'y a pas d'options donc on chosit le mode par defaut
   } else {
-    mode = 0;
+    mode = 3;
   }
 
   // Si le fichier finit par ".txt", on compresse
-  if (strcmp(extension_fichier(argv[3]), "txt") == 0) {
-    lzw_compresser(argv[3], mode);
+  if (strcmp(extension_fichier(argv[argc - 1]), "txt") == 0) {
+    // Print all
+    lzw_compresser(argv[argc - 1], mode);
     // Si fichier finit par ".lzw", on decompresse
-  } else if (strcmp(extension_fichier(argv[3]), "lzw") == 0) {
-    lzw_decompresser(argv[3], mode);
+  } else if (strcmp(extension_fichier(argv[argc - 1]), "lzw") == 0) {
+    lzw_decompresser(argv[argc - 1], mode);
     // Sinon on rale
   } else {
     raler(0,

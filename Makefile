@@ -28,14 +28,10 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.c
 	mkdir -p $(OBJDIR)
 	$(CC) -o $@ -c $< $(CFLAGS)
 
-# valgrind: 
-# 	@echo "Retrouver le résultat de Valgrind dans le fichier valgrind-results.txt"
-# 	@valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose --log-file=valgrind-results.txt $(EXEC) 
-
 test-fonctionnement: $(EXEC_FILE)
 	LC_MESSAGES=fr_FR.UTF-8 ./test-fonctionnement.sh
-
-# Nettoyage complet
+test-performance: $(EXEC_FILE)
+	LC_MESSAGES=fr_FR.UTF-8 ./test-performance.sh
 clean:
 	@rm -rf $(OBJDIR) $(BINDIR) $(DOCDIR) ../$(DIST).tar.xz valgrind-results.txt
 	@echo "Nettoyage des fichiers et dossier inutiles effectué."

@@ -7,6 +7,7 @@
 
 /** Notes et rappels **/
 - cas fichier avec AAA 
+- mode par defaut (2 arg)
 - ne pas envoyer le .git hidden folder
 - remettre le bon nom du fichier
 

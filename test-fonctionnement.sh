@@ -6,20 +6,20 @@ if [ -z `locale -a | grep fr_FR.utf8` ]; then
     exit 1
 fi
 
-PROG="./bin/lzw"
-TMP="/tmp/$$"
+PROG="./lzw"
+TMP="./tmp"
 
-# Teste vide 
+# Teste vide
 check_empty ()
 {
     if [ -s $1 ]; then
         return 0;
     fi
-
+    
     return 1
 }
 
-# Teste echec du programme 
+# Teste echec du programme
 # - Code de retour du pg doit etre egal a 1
 # - Stdout doit etre vide
 # - Stderr doit contenir un message d'erreur
@@ -29,17 +29,17 @@ check_echec()
         echo "Echec => code de retour == 0 alors que 1 attendu"
         return 0
     fi
-
+    
     if check_empty $TMP/stdout; then
         echo "Echec => sortie standard non vide"
         return 0
     fi
-
+    
     if ! check_empty $TMP/stderr; then
         echo "Echec => sortie erreur vide"
         return 0
     fi
-
+    
     return 1
 }
 
@@ -52,13 +52,13 @@ check_success()
         echo "Echec => code de retour == 1 alors que 0 attendu"
         return 0
     fi
-
+    
     
     if check_empty $TMP/stderr; then
         echo "Echec => sortie erreur non vide"
         return 0
     fi
-
+    
     return 1
 }
 
@@ -66,7 +66,7 @@ check_success()
 cmp_fichiers()
 {
     cmp $1 $2 > $TMP/cmp 2>&1
-
+    
     if ! cmp $TMP/cmp $TMP/stderr > /dev/null 2>&1; then
         echo "Sortie differente de la commande cmp"
         echo -n "Sortie du pg:\t"
@@ -75,66 +75,65 @@ cmp_fichiers()
         cat $TMP/cmp
         return 0
     fi
-
+    
     return 1
 }
 
 test_1()
 {
     echo "Test 1 - tests sur les arguments du programme"
-
+    
     echo -n "Test 1.1 - sans argument.........................."
     $PROG                          > $TMP/stdout 2> $TMP/stderr
     if check_echec $?;                             then return 1; fi
     echo "OK"
-
+    
     echo -n "Test 1.2 - 1 argument............................."
     $PROG argument              > $TMP/stdout 2> $TMP/stderr
     if check_echec $?;                             then return 1; fi
     echo "OK"
-
+    
     echo -n "Test 1.3 - trop d'arguments......................."
     $PROG argument1 argument2 argument3  > $TMP/stdout 2> $TMP/stderr
     if check_echec $?;                             then return 1; fi
     echo "OK"
-
+    
     echo -n "Test 1.4 - fichier inexistant....................."
-    $PROG -s hashmap dakldas.txt        > $TMP/stdout 2> $TMP/stderr
+    $PROG -s hashmap $TMP/inexistant.txt        > $TMP/stdout 2> $TMP/stderr
     if check_echec $?;                             then return 1; fi
     echo "OK"
-
+    
     echo -n "Test 1.5 - mauvaise extension....................."
-    $PROG -s hashmap ./tmp/lorem-h.png        > $TMP/stdout 2> $TMP/stderr
+    touch $TMP/mauvais-extension.png;
+    $PROG -s hashmap $TMP/mauvais-extension.png    > $TMP/stdout 2> $TMP/stderr
     if check_echec $?;                             then return 1; fi
     echo "OK"
 }
 
 test_2 ()
 {
-    echo "Test 2 - tests sur des fichiers de meme taille"
-
+    echo "Test 2 - tests sur des types de fichier"
+    
     echo -n "Test 2.1 - fichier vide............."
-    echo "" > $TMP/titi.txt ;    
-    echo "" > $TMP/toto.txt ;    
-    $PROG -s hashmap $TMP/toto.txt > $TMP/stdout ;
-    # $PROG -s hashmap $TMP/toto.lzw > $TMP/stdout ;
-    if check_success $?;                                   then return 1; fi
-    if cmp $TMP/titi.txt $TMP/toto.txt;                  then return 1; fi
+    touch $TMP/titi.txt ;
+    touch $TMP/toto.txt ;
+    $PROG -s hashmap $TMP/toto.txt                  >   $TMP/stdout
+    if check_success $?;                                    then return 0; fi
     echo "OK"
-    #  cmp ./tmp/lorem-h.txt ./tmp/lorem-l.txt && echo "Files are identical"
-
-    # echo -n "Test 2.2 - petit fichier aleatoire............."
-    # echo "acb" > $TMP/toto
+    
+    echo -n "Test 2.2 - petit fichier aleatoire............."
+    base64 /dev/urandom | head -c 100 > $TMP/titi.txt ;
+    cpy $TMP/titi.txt $TMP/toto.txt ;
     # $PROG $TMP/titi $TMP/toto      > $TMP/stdout 2> $TMP/stderr
     # if check_echec $?;                            then return 1; fi
     # if cmp_sortie  $TMP/titi $TMP/toto;           then return 1; fi
     # echo "OK"
-
+    
     # echo -n "Test 2.3 - petit fichier une seule caractere............."
     # $PROG /bin/ls /bin/ls          > $TMP/stdout 2> $TMP/stderr
     # if check_success $?;                          then return 1; fi
     # echo "OK"
-
+    
     # echo -n "Test 2.4 - grand fichier aleatoire............."
     # cp /bin/ls $TMP/toto ; cp /bin/ls $TMP/titi
     # echo "a" >> $TMP/toto    ; echo "b" >> $TMP/titi
@@ -142,7 +141,7 @@ test_2 ()
     # if check_echec $?;                            then return 1; fi
     # if cmp_sortie  $TMP/titi $TMP/toto;           then return 1; fi
     # echo "OK"
-
+    
     # echo -n "Test 2.4 - grand fichier une seule caractere............."
     # cp /bin/ls $TMP/toto ; cp /bin/ls $TMP/titi
     # echo "a" >> $TMP/toto    ; echo "b" >> $TMP/titi
@@ -155,21 +154,21 @@ test_2 ()
 test_3 ()
 {
     # echo "Test 3 - tests sur des fichiers de taille diff."
-
+    
     # echo -n "Test 3.1 - petits fichiers avec debut identique..."
     # echo -n "abc" > $TMP/toto ; echo -n "ab" > $TMP/titi
     # $PROG $TMP/toto $TMP/titi      > $TMP/stdout 2> $TMP/stderr
     # if check_echec $?;                            then return 1; fi
     # if cmp_sortie  $TMP/toto $TMP/titi;           then return 1; fi
     # echo "OK"
-
+    
     # echo -n "Test 3.2 - grands fichiers avec debut identique..."
     # cp /bin/ls $TMP/toto ; echo -n "a" >> $TMP/toto
     # $PROG /bin/ls $TMP/toto        > $TMP/stdout 2> $TMP/stderr
     # if check_echec $?;                            then return 1; fi
     # if cmp_sortie /bin/ls $TMP/toto;              then return 1; fi
     # echo "OK"
-
+    
     # echo -n "Test 3.3 - grands fichiers avec diff.............."
     # cp /bin/ls $TMP/toto ; sed "s/\(.\{4031\}\)./\1/" $TMP/toto > $TMP/titi
     # echo -n "a" >> $TMP/titi
@@ -177,7 +176,7 @@ test_3 ()
     # if check_echec $?;                            then return 1; fi
     # if cmp_sortie  $TMP/toto $TMP/titi;           then return 1; fi
     # echo "OK"
-
+    
     # echo -n "Test 3.4 - un fichier vide........................"
     # touch $TMP/tata
     # $PROG $TMP/toto $TMP/tata      > $TMP/stdout 2> $TMP/stderr
@@ -188,11 +187,11 @@ test_3 ()
 
 test_4()
 {
-#     echo -n "Test 4 - test memoire............................."
-#     valgrind --leak-check=full --error-exitcode=100 $PROG $TMP/titi $TMP/toto > /dev/null 2> $TMP/stderr
-#     test $? = 100 && echo "Echec => log de valgrind dans $TMP/stderr" && return 1
-#     echo "OK"
-
+    #     echo -n "Test 4 - test memoire............................."
+    #     valgrind --leak-check=full --error-exitcode=100 $PROG $TMP/titi $TMP/toto > /dev/null 2> $TMP/stderr
+    #     test $? = 100 && echo "Echec => log de valgrind dans $TMP/stderr" && return 1
+    #     echo "OK"
+    
     return 0
 }
 
@@ -202,12 +201,12 @@ mkdir $TMP
 # Lance les 4 series de tests
 for T in $(seq 1 4)
 do
-  if test_$T; then
-    echo "== Test $T : ok $T/4\n"
-  else
-    echo "== Test $T : echec"
-    return 1
-  fi
+    if test_$T; then
+        echo "== Test $T : ok $T/4\n"
+    else
+        echo "== Test $T : echec"
+        return 1
+    fi
 done
 
 rm -R $TMP
