@@ -100,10 +100,10 @@ void compresser_liste(ListeNoeud dict, FILE* fichier_source,
       /* P = C */
       strcpy(cle_P, cle_C);
     }
-    // Si on a atteint la taille max le dictionnaire, on le vide et on
+    // Si on a atteint la taille max du dictionnaire, on le vide et on
     // recommmence a 0
     if (taille_actuelle_dico == TAILLE_DICT - 2) {
-      /* Output code for P */
+      /* code de sortie de P */
       strcpy(valeur_P, recuperer_liste(dict, cle_P));
       wb_hex_as_short(fichier_destination, valeur_P);
 
@@ -114,7 +114,7 @@ void compresser_liste(ListeNoeud dict, FILE* fichier_source,
     }
   }
 
-  /* Output code for P */
+  /* code de sortie de P */
   strcpy(valeur_P, recuperer_liste(dict, cle_P));
   wb_hex_as_short(fichier_destination, valeur_P);
   liberer_liste(dict);
@@ -315,7 +315,7 @@ void compresser_trie(TrieNoeud dict, FILE* fichier_source,
     }
   }
 
-  /* Output code for P */
+  /* code de sortie de P */
   strcpy(valeur_P, recuperer_trie(dict, cle_P));
   wb_hex_as_short(fichier_destination, valeur_P);
   liberer_trie(dict);

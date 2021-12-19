@@ -30,8 +30,10 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.c
 
 test-fonctionnement: $(EXEC_FILE)
 	LC_MESSAGES=fr_FR.UTF-8 ./test-fonctionnement.sh
+
 test-performance: $(EXEC_FILE)
 	LC_MESSAGES=fr_FR.UTF-8 ./test-performance.sh
+
 clean:
 	@rm -rf $(OBJDIR) $(BINDIR) $(DOCDIR) ../$(DIST).tar.xz valgrind-results.txt
 	@echo "Nettoyage des fichiers et dossier inutiles effectué."

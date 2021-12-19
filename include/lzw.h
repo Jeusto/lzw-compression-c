@@ -46,9 +46,27 @@ void decompresser_hashmap(FILE* fichier_source, FILE* fichier_destination,
                           struct hashmap_s dict, char** tableau_cles,
                           char** tableau_valeurs);
 
+/*
+ * @brief conpresse un fichier en utilisant un dictionnare implémemté à partir
+ * d'une liste
+ *
+ * @param listNoeud: la liste à initialiser
+ * @param File: Le fichier à compresser
+ * @param File: Le fichier compressé
+ *
+ */
 void compresser_liste(ListeNoeud dict, FILE* fichier_source,
                       FILE* fichier_destination);
 
+/*
+ * @brief compresse un fichier en utilisant un dictionnare implémemté à partir
+ * d'une liste
+ *
+ * @param listNoeud: la liste à initialiser
+ * @param File: Le fichier à compresser
+ * @param File: Le fichier compressé
+ *
+ */
 void decompresser_liste(ListeNoeud dict, FILE* fichier_source,
                         FILE* fichier_destination);
 #endif

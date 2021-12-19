@@ -89,8 +89,8 @@ test_perf ()
 
 
 
-
-    for I in $(seq 1 1)
+    > $TMP/temps.time
+    for I in $(seq 1 5)
       do
         touch $TMP/titi21.txt ;
         touch $TMP/toto21.txt ;
@@ -100,22 +100,22 @@ test_perf ()
         end_time=$(date +%s.%6N)
         tempsPris=$(echo "scale=6; $end_time - $start_time" | bc -l)
         echo -n "$tempsPris\t"
-        echo "$tempsPris"  > $TMP/temps.time
+        echo "$tempsPris"  >> $TMP/temps.time
       done
 
     moyenne=0
     while read value
     do
-      moyenne=`echo "scale=3;${value} + ${moyenne}" | bc`         
+      moyenne=`echo "scale=6;${value} + ${moyenne}" | bc`         
     done < tmp/temps.time
 
+    moyenne=`echo "scale=6; ${moyenne} / 5" | bc`         
     echo "\nTemps moyenne pour fichier vide (mode $MODE): $moyenne\n"
     echo "0 $moyenne" > "./resultats-tests/$MODE.time"
 
 
-
-
-    for I in $(seq 1 1)
+    > $TMP/temps.time
+    for I in $(seq 1 5)
       do
         base64 /dev/urandom | head -c 10 > $TMP/titi22.txt ;
         cp $TMP/titi22.txt $TMP/toto22.txt ;
@@ -125,22 +125,21 @@ test_perf ()
         end_time=$(date +%s.%6N)
         tempsPris=$(echo "scale=6; $end_time - $start_time" | bc -l)
         echo -n "$tempsPris\t"
-        echo "$tempsPris"  >> $TMP/temps.time
+        echo "$tempsPris" >> $TMP/temps.time
       done
     
     moyenne=0
     while read value
     do
-      moyenne=`echo "scale=3;${value} + ${moyenne}" | bc`         
+      moyenne=`echo "scale=6;${value} + ${moyenne}" | bc`         
     done < tmp/temps.time
 
+    moyenne=`echo "scale=6; ${moyenne} / 5" | bc`         
     echo "\nTemps moyenne pour fichier extremement court (mode $MODE): $moyenne\n"
     echo "10 $moyenne" >> "./resultats-tests/$MODE.time"
 
-
-
-
-    for I in $(seq 1 1)
+    > $TMP/temps.time
+    for I in $(seq 1 5) 
       do
         base64 /dev/urandom | head -c 100 > $TMP/titi23.txt ;
         cp $TMP/titi23.txt $TMP/toto23.txt ;
@@ -156,16 +155,18 @@ test_perf ()
     moyenne=0
     while read value
     do
-      moyenne=`echo "scale=3;${value} + ${moyenne}" | bc`         
+      moyenne=`echo "scale=6;${value} + ${moyenne}" | bc`         
     done < tmp/temps.time
 
-    echo "\nTemps moyenne pour fichier tres court(mode $MODE): $moyenne\n"
+    moyenne=`echo "scale=6; ${moyenne} / 5" | bc`         
+    
+    echo "\nTemps moyenne pour fichier tres court (mode $MODE): $moyenne\n"
     echo "100 $moyenne" >> "$TESTS/$MODE.time"
 
 
 
-
-    for I in $(seq 1 1)
+    > $TMP/temps.time
+    for I in $(seq 1 5)
       do
         base64 /dev/urandom | head -c 1000 > $TMP/titi24.txt ;
         cp $TMP/titi24.txt $TMP/toto24.txt ;
@@ -181,16 +182,18 @@ test_perf ()
     moyenne=0
     while read value
     do
-      moyenne=`echo "scale=3;${value} + ${moyenne}" | bc`         
+      moyenne=`echo "scale=6;${value} + ${moyenne}" | bc`         
     done < tmp/temps.time
 
+    moyenne=`echo "scale=6; ${moyenne} / 5" | bc`         
+    
     echo "\nTemps moyenne pour fichier court (mode $MODE): $moyenne\n"
     echo "1000 $moyenne" >> "./resultats-tests/$MODE.time"
 
 
 
-
-    for I in $(seq 1 1)
+    > $TMP/temps.time
+    for I in $(seq 1 5)
       do
         base64 /dev/urandom | head -c 10000 > $TMP/titi25.txt ;
         cp $TMP/titi25.txt $TMP/toto25.txt ;
@@ -206,16 +209,19 @@ test_perf ()
     moyenne=0
     while read value
     do
-      moyenne=`echo "scale=3;${value} + ${moyenne}" | bc`         
+      moyenne=`echo "scale=6;${value} + ${moyenne}" | bc`         
     done < tmp/temps.time
 
+    moyenne=`echo "scale=6; ${moyenne} / 5" | bc`         
+
+    
     echo "\nTemps moyenne pour fichier moyen (mode $MODE): $moyenne\n"
     echo "10000 $moyenne" >> "./resultats-tests/$MODE.time"
 
 
 
-
-    for I in $(seq 1 1)
+    > $TMP/temps.time
+    for I in $(seq 1 5)
       do
         base64 /dev/urandom | head -c 100000 > $TMP/titi26.txt ;
         cp $TMP/titi26.txt $TMP/toto26.txt ;
@@ -231,15 +237,17 @@ test_perf ()
     moyenne=0
     while read value
     do
-      moyenne=`echo "scale=3;${value} + ${moyenne}" | bc`         
+      moyenne=`echo "scale=6;${value} + ${moyenne}" | bc`         
     done < tmp/temps.time
 
+    moyenne=`echo "scale=6; ${moyenne} / 5" | bc`         
+    
     echo "\nTemps moyenne pour fichier long (mode $MODE): $moyenne\n"
     echo "100000 $moyenne" >> "./resultats-tests/$MODE.time"
 
 
-
-    for I in $(seq 1 1)
+    > $TMP/temps.time
+    for I in $(seq 1 5)
       do
         head -c 250000 ./assets/the-adventures-of-sherlock-holmes.txt > $TMP/titi27.txt ;    
         cp $TMP/titi27.txt $TMP/toto27.txt ;
@@ -255,21 +263,23 @@ test_perf ()
     moyenne=0
     while read value
     do
-      moyenne=`echo "scale=3;${value} + ${moyenne}" | bc`         
+      moyenne=`echo "scale=6;${value} + ${moyenne}" | bc`         
     done < tmp/temps.time
 
+    moyenne=`echo "scale=6; ${moyenne} / 5" | bc`         
+    
     echo "\nTemps moyenne pour fichier tres long (mode $MODE): $moyenne\n"
     echo "250000 $moyenne" >> "./resultats-tests/$MODE.time"
 
 
 
-
-    for I in $(seq 1 1)
+    > $TMP/temps.time
+    for I in $(seq 1 5)
       do
         head -c 500000 ./assets/the-adventures-of-sherlock-holmes.txt > $TMP/titi28.txt ;
         cp $TMP/titi28.txt $TMP/toto28.txt ;
         start_time=$(date +%s.%6N)
-        $PROG -s $MODE $TMP/toto28.txt                  > $TMP/stdout 2> $TMP/stderr
+        $PROG -s $MODE $TMP/toto28.txt              > $TMP/stdout 2> $TMP/stderr
         $PROG -s $MODE $TMP/toto28.lzw              > $TMP/stdout 2> $TMP/stderr
         end_time=$(date +%s.%6N)
         tempsPris=$(echo "scale=6; $end_time - $start_time" | bc -l)
@@ -280,10 +290,12 @@ test_perf ()
     moyenne=0
     while read value
     do
-      moyenne=`echo "scale=3;${value} + ${moyenne}" | bc`         
+      moyenne=`echo "scale=6;${value} + ${moyenne}" | bc`         
     done < tmp/temps.time
-
-    echo "\nTemps moyenne pour fichier extrêmement (mode $MODE): $moyenne"
+    
+    moyenne=`echo "scale=6; ${moyenne} / 5" | bc`         
+    
+    echo "\nTemps moyenne pour fichier extrêmement long (mode $MODE): $moyenne"
     echo "500000 $moyenne" >> "./resultats-tests/$MODE.time"
 }
 

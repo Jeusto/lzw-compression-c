@@ -48,7 +48,7 @@ void lzw_compresser(const char* fichier, int mode) {
   }
   fseek(fichier_source, 0L, SEEK_SET);
 
-  // On appelle la bonne fonction en fonction du mode
+  // On appelle la bonne fonction en fonction de la structure a utiliser
   switch (mode) {
     case 1: {
       // Initialiser le dictionnaire avec les 256 premiers cles/valeurs
@@ -125,6 +125,7 @@ void lzw_decompresser(const char* fichier, int mode) {
   }
   fseek(fichier_source, 0L, SEEK_SET);
 
+  // On appelle la bonne fonction en fonction de la structure a utiliser
   switch (mode) {
     case 1: {
       // Initialiser le dictionnaire avec les 256 premiers cles/valeurs
