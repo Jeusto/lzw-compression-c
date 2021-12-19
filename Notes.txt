@@ -6,6 +6,7 @@
 - Dernieres verifications, archive + depot Moodle
 
 /** Notes et rappels **/
+- vg et cmp entre diff modes
 - cas fichier avec AAA 
 - mode par defaut (2 arg)
 - ne pas envoyer le .git hidden folder

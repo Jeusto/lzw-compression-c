@@ -81,8 +81,7 @@ cmp_fichiers()
 
 test_1()
 {
-    echo "Test 1 - tests sur les arguments du programme"
-    
+    echo "Test 1 - tests sur les arguments du programme (mode $MODE)" 
     echo -n "Test 1.1 - sans argument.........................."
     $PROG                          > $TMP/stdout 2> $TMP/stderr
     if check_echec $?;                             then return 1; fi
@@ -99,114 +98,153 @@ test_1()
     echo "OK"
     
     echo -n "Test 1.4 - fichier inexistant....................."
-    $PROG -s hashmap $TMP/inexistant.txt        > $TMP/stdout 2> $TMP/stderr
+    $PROG -s $MODE $TMP/inexistant.txt        > $TMP/stdout 2> $TMP/stderr
     if check_echec $?;                             then return 1; fi
     echo "OK"
     
     echo -n "Test 1.5 - mauvaise extension....................."
     touch $TMP/mauvais-extension.png;
-    $PROG -s hashmap $TMP/mauvais-extension.png    > $TMP/stdout 2> $TMP/stderr
+    $PROG -s $MODE $TMP/mauvais-extension.png    > $TMP/stdout 2> $TMP/stderr
     if check_echec $?;                             then return 1; fi
     echo "OK"
 }
 
 test_2 ()
 {
-    echo "Test 2 - tests sur des types de fichier"
-    
-    echo -n "Test 2.1 - fichier vide............."
-    touch $TMP/titi.txt ;
-    touch $TMP/toto.txt ;
-    $PROG -s hashmap $TMP/toto.txt                  >   $TMP/stdout
-    if check_success $?;                                    then return 0; fi
+
+    echo "Test 2 - test sur les fichiers (mode $MODE)"
+
+    echo -n "Test 2.1 - fichier vide..........................."
+    touch $TMP/titi21.txt ;
+    touch $TMP/toto21.txt ;
+    $PROG -s $MODE $TMP/toto21.txt            > $TMP/stdout 2> $TMP/stderr
+    if check_success $?;                                 then return 1; fi
     echo "OK"
-    
-    echo -n "Test 2.2 - petit fichier aleatoire............."
-    base64 /dev/urandom | head -c 100 > $TMP/titi.txt ;
-    cpy $TMP/titi.txt $TMP/toto.txt ;
-    # $PROG $TMP/titi $TMP/toto      > $TMP/stdout 2> $TMP/stderr
-    # if check_echec $?;                            then return 1; fi
-    # if cmp_sortie  $TMP/titi $TMP/toto;           then return 1; fi
-    # echo "OK"
-    
-    # echo -n "Test 2.3 - petit fichier une seule caractere............."
-    # $PROG /bin/ls /bin/ls          > $TMP/stdout 2> $TMP/stderr
-    # if check_success $?;                          then return 1; fi
-    # echo "OK"
-    
-    # echo -n "Test 2.4 - grand fichier aleatoire............."
-    # cp /bin/ls $TMP/toto ; cp /bin/ls $TMP/titi
-    # echo "a" >> $TMP/toto    ; echo "b" >> $TMP/titi
-    # $PROG $TMP/titi $TMP/toto      > $TMP/stdout 2> $TMP/stderr
-    # if check_echec $?;                            then return 1; fi
-    # if cmp_sortie  $TMP/titi $TMP/toto;           then return 1; fi
-    # echo "OK"
-    
-    # echo -n "Test 2.4 - grand fichier une seule caractere............."
-    # cp /bin/ls $TMP/toto ; cp /bin/ls $TMP/titi
-    # echo "a" >> $TMP/toto    ; echo "b" >> $TMP/titi
-    # $PROG $TMP/titi $TMP/toto      > $TMP/stdout 2> $TMP/stderr
-    # if check_echec $?;                            then return 1; fi
-    # if cmp_sortie  $TMP/titi $TMP/toto;           then return 1; fi
+
+    echo -n "Test 2.2 - fichier extremement court................"
+    base64 /dev/urandom | head -c 10 > $TMP/titi22.txt ;
+    cp $TMP/titi22.txt $TMP/toto22.txt ;
+    $PROG -s $MODE $TMP/toto22.txt                  > $TMP/stdout 2> $TMP/stderr
+    if check_success $?;                                 then return 1; fi
+    $PROG -s $MODE $TMP/toto22.lzw              > $TMP/stdout 2> $TMP/stderr
+    if check_success $?;                                 then return 1; fi
+    if cmp_fichiers $TMP/toto22.txt $TMP/titi22.txt    ;  then return 1; fi 
+    echo "OK"
+
+    echo -n "Test 2.3 - fichier tres court....................."
+    base64 /dev/urandom | head -c 100 > $TMP/titi23.txt ;
+    cp $TMP/titi23.txt $TMP/toto23.txt ;
+    $PROG -s $MODE $TMP/toto23.txt                  > $TMP/stdout 2> $TMP/stderr
+    if check_success $?;                                 then return 1; fi
+    $PROG -s $MODE $TMP/toto23.lzw              > $TMP/stdout 2> $TMP/stderr
+    if check_success $?;                                 then return 1; fi
+    if cmp_fichiers $TMP/toto23.txt $TMP/titi23.txt    ;  then return 1; fi 
+    echo "OK"
+
+    echo -n "Test 2.4 - fichier court.........................."
+    base64 /dev/urandom | head -c 1000 > $TMP/titi24.txt ;
+    cp $TMP/titi24.txt $TMP/toto24.txt ;
+    $PROG -s $MODE $TMP/toto24.txt                  > $TMP/stdout 2> $TMP/stderr
+    if check_success $?;                                 then return 1; fi
+    $PROG -s $MODE $TMP/toto24.lzw              > $TMP/stdout 2> $TMP/stderr
+    if check_success $?;                                 then return 1; fi
+    if cmp_fichiers $TMP/toto24.txt $TMP/titi24.txt    ;  then return 1; fi 
+    echo "OK"
+
+    echo -n "Test 2.5 - fichier moyen.........................."
+    base64 /dev/urandom | head -c 10000 > $TMP/titi25.txt ;
+    cp $TMP/titi25.txt $TMP/toto25.txt ;
+    $PROG -s $MODE $TMP/toto25.txt                  > $TMP/stdout 2> $TMP/stderr
+    if check_success $?;                                 then return 1; fi
+    $PROG -s $MODE $TMP/toto25.lzw              > $TMP/stdout 2> $TMP/stderr
+    if check_success $?;                                 then return 1; fi
+    if cmp_fichiers $TMP/toto25.txt $TMP/titi25.txt    ;  then return 1; fi 
+    echo "OK"
+
+    echo -n "Test 2.6 - fichier long..........................."
+    base64 /dev/urandom | head -c 100000 > $TMP/titi26.txt ;
+    cp $TMP/titi26.txt $TMP/toto26.txt ;
+    $PROG -s $MODE $TMP/toto26.txt                  > $TMP/stdout 2> $TMP/stderr
+    if check_success $?;                                 then return 1; fi
+    $PROG -s $MODE $TMP/toto26.lzw              > $TMP/stdout 2> $TMP/stderr
+    if check_success $?;                                 then return 1; fi
+    if cmp_fichiers $TMP/toto26.txt $TMP/titi26.txt    ;  then return 1; fi 
+    echo "OK"
+
+    echo -n "Test 2.7 - fichier tres long......................"
+    head -c 250000 ./tests/the-adventures-of-sherlock-holmes.txt > $TMP/titi27.txt ;    
+    cp $TMP/titi27.txt $TMP/toto27.txt ;
+    $PROG -s $MODE $TMP/toto27.txt                  > $TMP/stdout 2> $TMP/stderr
+    if check_success $?;                                 then return 1; fi
+    $PROG -s $MODE $TMP/toto27.lzw              > $TMP/stdout 2> $TMP/stderr
+    if check_success $?;                                 then return 1; fi
+    if cmp_fichiers $TMP/toto27.txt $TMP/titi27.txt    ;  then return 1; fi 
+    echo "OK"
+
+    echo -n "Test 2.8 - fichier extremement long..............."
+    head -c 500000 ./tests/the-adventures-of-sherlock-holmes.txt > $TMP/titi28.txt ;
+    cp $TMP/titi28.txt $TMP/toto28.txt ;
+    $PROG -s $MODE $TMP/toto28.txt                  > $TMP/stdout 2> $TMP/stderr
+    if check_success $?;                                 then return 1; fi
+    $PROG -s $MODE $TMP/toto28.lzw              > $TMP/stdout 2> $TMP/stderr
+    if check_success $?;                                 then return 1; fi
+    if cmp_fichiers $TMP/toto28.txt $TMP/titi28.txt     ;  then return 1; fi 
     echo "OK"
 }
 
-test_3 ()
-{
-    # echo "Test 3 - tests sur des fichiers de taille diff."
-    
-    # echo -n "Test 3.1 - petits fichiers avec debut identique..."
-    # echo -n "abc" > $TMP/toto ; echo -n "ab" > $TMP/titi
-    # $PROG $TMP/toto $TMP/titi      > $TMP/stdout 2> $TMP/stderr
-    # if check_echec $?;                            then return 1; fi
-    # if cmp_sortie  $TMP/toto $TMP/titi;           then return 1; fi
-    # echo "OK"
-    
-    # echo -n "Test 3.2 - grands fichiers avec debut identique..."
-    # cp /bin/ls $TMP/toto ; echo -n "a" >> $TMP/toto
-    # $PROG /bin/ls $TMP/toto        > $TMP/stdout 2> $TMP/stderr
-    # if check_echec $?;                            then return 1; fi
-    # if cmp_sortie /bin/ls $TMP/toto;              then return 1; fi
-    # echo "OK"
-    
-    # echo -n "Test 3.3 - grands fichiers avec diff.............."
-    # cp /bin/ls $TMP/toto ; sed "s/\(.\{4031\}\)./\1/" $TMP/toto > $TMP/titi
-    # echo -n "a" >> $TMP/titi
-    # $PROG $TMP/toto $TMP/titi      > $TMP/stdout 2> $TMP/stderr
-    # if check_echec $?;                            then return 1; fi
-    # if cmp_sortie  $TMP/toto $TMP/titi;           then return 1; fi
-    # echo "OK"
-    
-    # echo -n "Test 3.4 - un fichier vide........................"
-    # touch $TMP/tata
-    # $PROG $TMP/toto $TMP/tata      > $TMP/stdout 2> $TMP/stderr
-    # if check_echec $?;                            then return 1; fi
-    # if cmp_sortie  $TMP/toto $TMP/tata;           then return 1; fi
-    echo "OK"
-}
+# test_2 ()
+# {
 
-test_4()
-{
-    #     echo -n "Test 4 - test memoire............................."
-    #     valgrind --leak-check=full --error-exitcode=100 $PROG $TMP/titi $TMP/toto > /dev/null 2> $TMP/stderr
-    #     test $? = 100 && echo "Echec => log de valgrind dans $TMP/stderr" && return 1
-    #     echo "OK"
-    
-    return 0
-}
+#     echo "Test 3 - divers tests"
 
-# Repertoire temporaire pour stocker les fichiers et les sorties du programme
+#     echo -n "Test 2.1 - compression ..........................."
+#     touch $TMP/titi21.txt ;
+
+# } 
+
+# Lance les series de tests de fonctionnement
+
+rm -R $TMP
 mkdir $TMP
+MODE="hashmap"
 
-# Lance les 4 series de tests
-for T in $(seq 1 4)
+for T in $(seq 1 2)
 do
     if test_$T; then
-        echo "== Test $T : ok $T/4\n"
+        echo "== Test $T : OK ✅\n"
     else
-        echo "== Test $T : echec"
+        echo "== Test $T : ECHEC 🤬"
         return 1
     fi
 done
+
+
+rm -R $TMP
+mkdir $TMP
+MODE="trie"
+for T in $(seq 1 2)
+do
+    if test_$T; then
+        echo "== Test $T : OK ✅\n"
+    else
+        echo "== Test $T : ECHEC 🤬"
+        return 1
+    fi
+done
+
+
+rm -R $TMP
+mkdir $TMP
+MODE="liste-chainee"
+for T in $(seq 1 2)
+do
+    if test_$T; then
+        echo "== Test $T : OK ✅\n"
+    else
+        echo "== Test $T : ECHEC 🤬"
+        return 1
+    fi
+done
+
 
 rm -R $TMP

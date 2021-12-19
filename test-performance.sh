@@ -7,7 +7,7 @@ if [ -z `locale -a | grep fr_FR.utf8` ]; then
 fi
 
 PROG="./lzw"
-TMP="./temp"
+TMP="./tmp"
 
 # Teste vide
 check_empty ()
@@ -79,127 +79,250 @@ cmp_fichiers()
     return 1
 }
 
-test_1()
-{
-    echo "Test 1 - test de performances"
+test_1 ()
+{    
+    echo "\nTest de performance sur les fichiers (mode $MODE)\n"
+    tempsPris=0
+    moyenne=0
+
+
+
+
+    for I in $(seq 1 5)
+      do
+        touch $TMP/titi21.txt ;
+        touch $TMP/toto21.txt ;
+        start_time=$(date +%s.%6N)
+        $PROG -s $MODE $TMP/toto21.txt       > $TMP/stdout 2> $TMP/stderr
+        $PROG -s $MODE $TMP/toto21.lzw         > $TMP/stdout 2> $TMP/stderr
+        end_time=$(date +%s.%6N)
+        tempsPris=$(echo "scale=6; $end_time - $start_time" | bc -l)
+        echo -n "$tempsPris\t"
+        echo "$tempsPris"  > $TMP/temps.time
+      done
+
+    moyenne=0
+    while read value
+    do
+      moyenne=`echo "scale=3;${value} + ${moyenne}" | bc`         
+    done < tmp/temps.time
+
+    echo "\nTemps moyenne pour fichier vide (mode $MODE): $moyenne\n"
+    echo "0 $moyenne" > "./resultats-tests/$MODE.time"
+
+
+
+
+    for I in $(seq 1 5)
+      do
+        base64 /dev/urandom | head -c 10 > $TMP/titi22.txt ;
+        cp $TMP/titi22.txt $TMP/toto22.txt ;
+        start_time=$(date +%s.%6N)
+        $PROG -s $MODE $TMP/toto22.txt                  > $TMP/stdout 2> $TMP/stderr
+        $PROG -s $MODE $TMP/toto22.lzw              > $TMP/stdout 2> $TMP/stderr
+        end_time=$(date +%s.%6N)
+        tempsPris=$(echo "scale=6; $end_time - $start_time" | bc -l)
+        echo -n "$tempsPris\t"
+        echo "$tempsPris"  >> $TMP/temps.time
+      done
     
-    echo -n "Test 1.1 - fichier vide..........................."
-    touch $TMP/titi.txt ;
-    touch $TMP/toto.txt ;
-    $PROG -s hashmap $TMP/toto.txt            > $TMP/stdout 2> $TMP/stderr
-    if check_success $?;                                 then return 1; fi
-    echo "OK"
+    moyenne=0
+    while read value
+    do
+      moyenne=`echo "scale=3;${value} + ${moyenne}" | bc`         
+    done < tmp/temps.time
 
-    echo -n "Test 1.2 - fichier tres tres court......................"
-    base64 /dev/urandom | head -c 10 > $TMP/titi.txt ;
-    cp $TMP/titi.txt $TMP/toto.txt ;
-    $PROG -s hashmap $TMP/toto.txt                  > $TMP/stdout 2> $TMP/stderr
-    if check_success $?;                                 then return 1; fi
-    $PROG -s hashmap $TMP/toto2.lzw              > $TMP/stdout 2> $TMP/stderr
-    if check_success $?;                                 then return 1; fi
-    cmp_fichiers $TMP/toto.txt $TMP/titi.txt 
-    echo "OK"
+    echo "\nTemps moyenne pour fichier extremement court (mode $MODE): $moyenne\n"
+    echo "10 $moyenne" >> "./resultats-tests/$MODE.time"
+
+
+
+
+    for I in $(seq 1 5)
+      do
+        base64 /dev/urandom | head -c 100 > $TMP/titi23.txt ;
+        cp $TMP/titi23.txt $TMP/toto23.txt ;
+        start_time=$(date +%s.%6N)
+        $PROG -s $MODE $TMP/toto23.txt                  > $TMP/stdout 2> $TMP/stderr
+        $PROG -s $MODE $TMP/toto23.lzw              > $TMP/stdout 2> $TMP/stderr
+        end_time=$(date +%s.%6N)
+        tempsPris=$(echo "scale=6; $end_time - $start_time" | bc -l)
+        echo -n "$tempsPris\t"
+        echo "$tempsPris"  >> $TMP/temps.time
+      done
+
+    moyenne=0
+    while read value
+    do
+      moyenne=`echo "scale=3;${value} + ${moyenne}" | bc`         
+    done < tmp/temps.time
+
+    echo "\nTemps moyenne pour fichier tres court(mode $MODE): $moyenne\n"
+    echo "100 $moyenne" >> "./resultats-tests/$MODE.time"
+
+
+
+
+    for I in $(seq 1 5)
+      do
+        base64 /dev/urandom | head -c 1000 > $TMP/titi24.txt ;
+        cp $TMP/titi24.txt $TMP/toto24.txt ;
+        start_time=$(date +%s.%6N)
+        $PROG -s $MODE $TMP/toto24.txt                  > $TMP/stdout 2> $TMP/stderr
+        $PROG -s $MODE $TMP/toto24.lzw              > $TMP/stdout 2> $TMP/stderr
+        end_time=$(date +%s.%6N)
+        tempsPris=$(echo "scale=6; $end_time - $start_time" | bc -l)
+        echo -n "$tempsPris\t"
+        echo "$tempsPris"  >> $TMP/temps.time
+      done
     
-    echo -n "Test 1.3 - fichier tres court.........................."
-    base64 /dev/urandom | head -c 100 > $TMP/titi.txt ;
-    cp $TMP/titi.txt $TMP/toto.txt ;
-    $PROG -s hashmap $TMP/toto.txt                  > $TMP/stdout 2> $TMP/stderr
-    if check_success $?;                                 then return 1; fi
-    $PROG -s hashmap $TMP/toto2.lzw              > $TMP/stdout 2> $TMP/stderr
-    if check_success $?;                                 then return 1; fi
-    cmp_fichiers $TMP/toto.txt $TMP/titi.txt 
-    echo "OK"
+    moyenne=0
+    while read value
+    do
+      moyenne=`echo "scale=3;${value} + ${moyenne}" | bc`         
+    done < tmp/temps.time
 
-    echo -n "Test 1.4 - fichier court.........................."
-    base64 /dev/urandom | head -c 1000 > $TMP/titi.txt ;
-    cp $TMP/titi.txt $TMP/toto.txt ;
-    $PROG -s hashmap $TMP/toto.txt                  > $TMP/stdout 2> $TMP/stderr
-    if check_success $?;                                 then return 1; fi
-    $PROG -s hashmap $TMP/toto2.lzw              > $TMP/stdout 2> $TMP/stderr
-    if check_success $?;                                 then return 1; fi
-    cmp_fichiers $TMP/toto.txt $TMP/titi.txt 
-    echo "OK"
+    echo "\nTemps moyenne pour fichier court (mode $MODE): $moyenne\n"
+    echo "1000 $moyenne" >> "./resultats-tests/$MODE.time"
 
 
-    echo -n "Test 1.4 - fichier moyen.........................."
-    base64 /dev/urandom | head -c 10000 > $TMP/titi.txt ;
-    cp $TMP/titi.txt $TMP/toto.txt ;
-    $PROG -s hashmap $TMP/toto.txt                  > $TMP/stdout 2> $TMP/stderr
-    if check_success $?;                                 then return 1; fi
-    $PROG -s hashmap $TMP/toto2.lzw              > $TMP/stdout 2> $TMP/stderr
-    if check_success $?;                                 then return 1; fi
-    cmp_fichiers $TMP/toto.txt $TMP/titi.txt 
-    echo "OK"
-
-    # echo -n "Test 1.5 - fichier moyen avec un seul caractere..."
-    # rm -rf $TMP/titi.txt ; rm -rf $TMP/toto.txt ;
-    # touch $TMP/titi.txt ; touch $TMP/toto.txt ;
-    # for i in `seq 1 10000`; do echo -n "A" >> $TMP/titi.txt ; done
-    # cp $TMP/titi.txt $TMP/toto.txt ;
-    # $PROG $TMP/toto.txt                  > $TMP/stdout 2> $TMP/stderr
-    # if check_success $?;                                 then return 1; fi
-    # $PROG $TMP/toto2.lzw              > $TMP/stdout 2> $TMP/stderr
-    # if check_success $?;                                 then return 1; fi
-    # cmp_fichiers $TMP/toto.txt $TMP/titi.txt 
-    # echo "OK"
-
-    echo -n "Test 1.6 - fichier long.........................."
-    base64 /dev/urandom | head -c 100000 > $TMP/titi.txt ;
-    cp $TMP/titi.txt $TMP/toto.txt ;
-    $PROG -s hashmap $TMP/toto.txt                  > $TMP/stdout 2> $TMP/stderr
-    if check_success $?;                                 then return 1; fi
-    $PROG -s hashmap $TMP/toto2.lzw              > $TMP/stdout 2> $TMP/stderr
-    if check_success $?;                                 then return 1; fi
-    cmp_fichiers $TMP/toto.txt $TMP/titi.txt 
-    echo "OK"
-
-  echo -n "Test 1.6 - fichier tres long.........................."
-      base64 /dev/urandom | head -c 500000 > $TMP/titi.txt ;
-      cp $TMP/titi.txt $TMP/toto.txt ;
-      $PROG -s hashmap $TMP/toto.txt                  > $TMP/stdout 2> $TMP/stderr
-      if check_success $?;                                 then return 1; fi
-      $PROG -s hashmap $TMP/toto2.lzw              > $TMP/stdout 2> $TMP/stderr
-      if check_success $?;                                 then return 1; fi
-      cmp_fichiers $TMP/toto.txt $TMP/titi.txt 
-      echo "OK"
-  }
 
 
-# Repertoire temporaire pour stocker les fichiers et les sorties du programme
+    for I in $(seq 1 5)
+      do
+        base64 /dev/urandom | head -c 10000 > $TMP/titi25.txt ;
+        cp $TMP/titi25.txt $TMP/toto25.txt ;
+        start_time=$(date +%s.%6N)
+        $PROG -s $MODE $TMP/toto25.txt                  > $TMP/stdout 2> $TMP/stderr
+        $PROG -s $MODE $TMP/toto25.lzw              > $TMP/stdout 2> $TMP/stderr
+        end_time=$(date +%s.%6N)
+        tempsPris=$(echo "scale=6; $end_time - $start_time" | bc -l)
+        echo -n "$tempsPris\t"
+        echo "$tempsPris"  >> $TMP/temps.time
+      done
+
+    moyenne=0
+    while read value
+    do
+      moyenne=`echo "scale=3;${value} + ${moyenne}" | bc`         
+    done < tmp/temps.time
+
+    echo "\nTemps moyenne pour fichier moyen (mode $MODE): $moyenne\n"
+    echo "10000 $moyenne" >> "./resultats-tests/$MODE.time"
+
+
+
+
+    for I in $(seq 1 5)
+      do
+        base64 /dev/urandom | head -c 100000 > $TMP/titi26.txt ;
+        cp $TMP/titi26.txt $TMP/toto26.txt ;
+        start_time=$(date +%s.%6N)
+        $PROG -s $MODE $TMP/toto26.txt                  > $TMP/stdout 2> $TMP/stderr
+        $PROG -s $MODE $TMP/toto26.lzw              > $TMP/stdout 2> $TMP/stderr
+        end_time=$(date +%s.%6N)
+        tempsPris=$(echo "scale=6; $end_time - $start_time" | bc -l)
+        echo -n "$tempsPris\t"
+        echo "$tempsPris"  >> $TMP/temps.time
+      done 
+    
+    moyenne=0
+    while read value
+    do
+      moyenne=`echo "scale=3;${value} + ${moyenne}" | bc`         
+    done < tmp/temps.time
+
+    echo "\nTemps moyenne pour fichier long (mode $MODE): $moyenne\n"
+    echo "100000 $moyenne" >> "./resultats-tests/$MODE.time"
+
+
+
+    for I in $(seq 1 5)
+      do
+        head -c 250000 ./assets/the-adventures-of-sherlock-holmes.txt > $TMP/titi27.txt ;    
+        cp $TMP/titi27.txt $TMP/toto27.txt ;
+        start_time=$(date +%s.%6N)
+        $PROG -s $MODE $TMP/toto27.txt                  > $TMP/stdout 2> $TMP/stderr
+        $PROG -s $MODE $TMP/toto27.lzw              > $TMP/stdout 2> $TMP/stderr
+        end_time=$(date +%s.%6N)
+        tempsPris=$(echo "scale=6; $end_time - $start_time" | bc -l)
+        echo -n "$tempsPris\t"
+        echo "$tempsPris"  >> $TMP/temps.time
+     done
+
+    moyenne=0
+    while read value
+    do
+      moyenne=`echo "scale=3;${value} + ${moyenne}" | bc`         
+    done < tmp/temps.time
+
+    echo "\nTemps moyenne pour fichier tres long (mode $MODE): $moyenne\n"
+    echo "250000 $moyenne" >> "./resultats-tests/$MODE.time"
+
+
+
+
+    for I in $(seq 1 5)
+      do
+        head -c 500000 ./assets/the-adventures-of-sherlock-holmes.txt > $TMP/titi28.txt ;
+        cp $TMP/titi28.txt $TMP/toto28.txt ;
+        start_time=$(date +%s.%6N)
+        $PROG -s $MODE $TMP/toto28.txt                  > $TMP/stdout 2> $TMP/stderr
+        $PROG -s $MODE $TMP/toto28.lzw              > $TMP/stdout 2> $TMP/stderr
+        end_time=$(date +%s.%6N)
+        tempsPris=$(echo "scale=6; $end_time - $start_time" | bc -l)
+        echo -n "$tempsPris\t"
+        echo "$tempsPris"  >> $TMP/temps.time
+      done
+      
+    moyenne=0
+    while read value
+    do
+      moyenne=`echo "scale=3;${value} + ${moyenne}" | bc`         
+    done < tmp/temps.time
+
+    echo "\nTemps moyenne pour fichier extrêmement (mode $MODE): $moyenne"
+    echo "500000 $moyenne" >> "./resultats-tests/$MODE.time"
+}
+
+rm -R $TMP
 mkdir $TMP
-
-# Liste chainee
+MODE="hashmap"
 for T in $(seq 1)
 do
     if test_$T; then
-        echo "== Test $T : ok $T/6\n"
+        echo "== Test performances avec $MODE : OK ✅\n"
     else
-        echo "== Test $T : echec"
+        echo "== Test performances avec $MODE : ECHEC 🤬"
         return 1
     fi
 done
 
-# # Trie
-# for T in $(seq 1)
-# do
-#     if test_$T; then
-#         echo "== Test $T : ok $T/6\n"
-#     else
-#         echo "== Test $T : echec"
-#         return 1
-#     fi
-# done
-# rm -R $TMP
+rm -R $TMP
+mkdir $TMP
+MODE="trie"
+for T in $(seq 1)
+do
+    if test_$T; then
+        echo "== Test performances avec $MODE : OK ✅\n"
+    else
+        echo "== Test performances avec $MODE : ECHEC 🤬"
+        return 1
+    fi
+done
+
+rm -R $TMP
+mkdir $TMP
+MODE="liste-chainee"
+for T in $(seq 1)
+do
+    if test_$T; then
+        echo "== Test performances avec $MODE : OK ✅\n"
+    else
+        echo "== Test  performances avec $MODE : ECHEC 🤬"
+        return 1
+    fi
+done
 
 
-# # Hashmap
-# for T in $(seq 1)
-# do
-#     if test_$T; then
-#         echo "== Test $T : ok $T/6\n"
-#     else
-#         echo "== Test $T : echec"
-#         return 1
-#     fi
-# done
-# rm -R $TMP
+rm -R $TMP

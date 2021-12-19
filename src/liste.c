@@ -56,7 +56,7 @@ char *recuperer_liste(ListeNoeud liste, char *cle) {
   ListeNoeud noeud = liste;
 
   while (noeud != NULL) {
-    // On compare la clé, si elle est trouvée,  on renvoie la valeur
+    // On compare la clé, si elle est trouvée, on renvoie la valeur
     if (strcmp(noeud->cle, cle) == 0) {
       return noeud->valeur;
     }

@@ -29,7 +29,7 @@ void lzw_compresser(const char* fichier, int mode) {
   }
 
   // Creer et ouvrir le fichier destination
-  char* nouveau_nom = concat(nom_fichier_destination, "2.lzw");
+  char* nouveau_nom = concat(nom_fichier_destination, ".lzw");
   FILE* fichier_destination = fopen(nouveau_nom, "wb");
   free(nouveau_nom);
 
