@@ -25,17 +25,17 @@
 
 /** Autre **/
 make && 
-./bin/lzw -s liste-chainee tmp/lorem-l.txt ; 
-./bin/lzw -s trie tmp/lorem-h.txt ; 
-./bin/lzw -s hashmap tmp/lorem-t.txt ; 
+./lzw -s liste-chainee tmp/lorem-l.txt ; 
+./lzw -s trie tmp/lorem-h.txt ; 
+./lzw -s hashmap tmp/lorem-t.txt ; 
 cmp tmp/lorem-l2.lzw tmp/lorem-h2.lzw ; 
 cmp tmp/lorem-l2.lzw tmp/lorem-t2.lzw ; 
 cmp tmp/lorem-h2.lzw tmp/lorem-t2.lzw ; 
 
 make && 
-./bin/lzw -s liste-chainee tmp/lorem-l2.lzw ; 
-./bin/lzw -s trie tmp/lorem-h2.lzw ; 
-./bin/lzw -s hashmap tmp/lorem-t2.lzw ;
+./lzw -s liste-chainee tmp/lorem-l2.lzw ; 
+./lzw -s trie tmp/lorem-h2.lzw ; 
+./lzw -s hashmap tmp/lorem-t2.lzw ;
 cmp tmp/lorem-l2.txt tmp/lorem-h2.txt ; 
 cmp tmp/lorem-l2.txt tmp/lorem-t2.txt ; 
 cmp tmp/lorem-h2.txt tmp/lorem-t2.txt
