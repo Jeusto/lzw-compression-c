@@ -1,7 +1,6 @@
 /** A faire **/
-- Corriger warning max stack frame (tableau alloue trop grand ?)
 - Faire fonctionner le clear code pour les gros fichiers 
-- Harmoniser code (utiliser tableau de cles et valeurs comme pr hashmap)
+- Harmoniser code
 - Bien commenter le code, rendre le code plus propre et jolie
 - Test.sh pour tester le fonctionnement et evaluer performances
 - Rapport de projet
@@ -15,6 +14,7 @@
 - codes de retours
 - fermer les descripteurs et free malloc si exit(EXIT_FAILURE) ? 
 - ne pas envoyer le .git hidden folder
+- cas fichier avec AAA 
 
 /** Tests ** /
 - Test de fonctionnalite & erreurs & memoire

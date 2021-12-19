@@ -4,7 +4,6 @@
 #include <string.h>
 
 void liberer_liste(ListeNoeud liste) {
-  printf("liberer_liste\n");
   ListeNoeud actuel = liste;
   ListeNoeud prochain;
   while (actuel != NULL) {
@@ -16,25 +15,24 @@ void liberer_liste(ListeNoeud liste) {
   }
 }
 
-void afficher_liste(ListeNoeud liste) {
-  printf("%d", liste == NULL);
-  ListeNoeud noeud = liste;
-  int n = 0;
-  while (noeud != NULL) {
-    printf("%d == %s : %s\n", n, noeud->cle, noeud->valeur);
-    noeud = noeud->prochain;
-    n++;
+ListeNoeud creer_noeud_liste(char *cle, char *valeur) {
+  ListeNoeud nouveau_noeud = malloc(sizeof(struct liste_noeud));
+  if (nouveau_noeud == NULL) {
+    printf("erreur");
+    exit(1);
   }
+  nouveau_noeud->cle = malloc(strlen(cle) + 1);
+  strcpy(nouveau_noeud->cle, cle);
+  nouveau_noeud->valeur = malloc(strlen(valeur) + 1);
+  strcpy(nouveau_noeud->valeur, valeur);
+  nouveau_noeud->prochain = NULL;
+
+  return nouveau_noeud;
 }
 
 ListeNoeud inserer_liste(ListeNoeud liste, char *cle, char *valeur) {
   if (liste == NULL) {
-    liste = (struct liste_noeud *)malloc(sizeof(struct liste_noeud));
-    liste->cle = malloc(strlen(cle) + 1);
-    strcpy(liste->cle, cle);
-    liste->valeur = malloc(strlen(valeur) + 1);
-    strcpy(liste->valeur, valeur);
-    liste->prochain = NULL;
+    liste = creer_noeud_liste(cle, valeur);
   }
 
   else {

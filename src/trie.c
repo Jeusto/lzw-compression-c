@@ -16,10 +16,11 @@ void liberer_trie(TrieNoeud trie) {
   if (trie->valeur) {
     free(trie->valeur);
   }
+
   free(trie);
 }
 
-TrieNoeud creer_noeud() {
+TrieNoeud creer_noeud_trie() {
   // On alloue l'espace memoire pour le noeud
   TrieNoeud nouveau_noeud = malloc(sizeof(struct trie_noeud));
 
@@ -38,30 +39,35 @@ TrieNoeud creer_noeud() {
   return nouveau_noeud;
 };
 
-void inserer_trie(TrieNoeud trie, char *cle, char *valeur) {
+TrieNoeud inserer_trie(TrieNoeud trie, char *cle, char *valeur) {
   // TrieNoeud n'existe pas, on le cree
   if (trie == NULL) {
-    trie = creer_noeud();
+    trie = creer_noeud_trie();
   }
-  unsigned int index;
-  unsigned int len = strlen(cle);
-  TrieNoeud noeud_temporaire = trie;
 
-  // On insere les characteres un par un
-  for (unsigned int i = 0; i < len; i++) {
-    index = (unsigned char)cle[i];
+  else {
+    unsigned int index;
+    unsigned int len = strlen(cle);
+    TrieNoeud noeud_temporaire = trie;
 
-    if (noeud_temporaire->fils[index] == NULL) {
-      noeud_temporaire->fils[index] = creer_noeud();
+    // On insere les characteres un par un
+    for (unsigned int i = 0; i < len; i++) {
+      index = (unsigned char)cle[i];
+
+      if (noeud_temporaire->fils[index] == NULL) {
+        noeud_temporaire->fils[index] = creer_noeud_trie();
+      }
+
+      noeud_temporaire = noeud_temporaire->fils[index];
     }
 
-    noeud_temporaire = noeud_temporaire->fils[index];
+    // L'enchainement de caracteres est maintenant valide
+    noeud_temporaire->est_cle_valide = true;
+    noeud_temporaire->valeur = malloc(strlen(valeur) + 1);
+    strcpy(noeud_temporaire->valeur, valeur);
   }
 
-  // L'enchainement de caracteres est maintenant valide
-  noeud_temporaire->est_cle_valide = true;
-  noeud_temporaire->valeur = malloc(strlen(valeur) + 1);
-  strcpy(noeud_temporaire->valeur, valeur);
+  return trie;
 }
 
 char *recuperer_trie(TrieNoeud trie, char *cle) {

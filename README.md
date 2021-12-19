@@ -7,18 +7,23 @@ Implémentation d'une méthode de compression et de décompressions de fichiers 
 
 ## Compilation et éxecution
 
-Pour compiler utilise la commande `make`
+Pour compiler, veuillez utiliser la commande `make`
 
 Pour lancer le programme, veuillez éxecuter la commande `./bin/lwz [options] <nom_fichier>`
 
-La seule option disponible est `-s` qui permet de préciser la structure de données à utiliser pour le dictionnaire. Les valeurs possibles sont `liste-chainee`, `trie` et `hashmap`.
+Pour lancer les tests de fonctionnalité, veuillez exécuter la commande `make test-fonctionnalite`
 
-Si l'extension du fichier est `".txt"`, le fichier sera compréssé et produira un fichier avec le même nom mais avec l'extension `".lzw"` (inversement si l'extension du fichier est `".lzw"`.
+Pour lancer les tests de de performances, veuillez exécuter la commande `make test-performance`
 
 ## Notes
+
+La seule option disponible est `-s` qui permet de préciser la structure de données à utiliser pour le dictionnaire. Les valeurs possibles sont `liste-chainee`, `trie` et `hashmap`.
+Par defaut, la compression et décompression se font en utilisant le `hashmap`.
+
+Si l'extension du fichier est `".txt"`, le fichier sera compréssé et produira un fichier avec le même nom mais avec l'extension `".lzw"` (inversement si l'extension du fichier est `".lzw"`.
 
 Toutes les explications et procédures d'exécutions sont disponibles dans le rapport.
 
 ## Crédits
 
-Projet réalisé par Saday Arhun et ALCINDOR Jodel.
+Projet réalisé par SADAY Arhun et ALCINDOR Jodel.

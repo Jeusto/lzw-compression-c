@@ -12,9 +12,9 @@ typedef struct trie_noeud {
   struct trie_noeud *fils[NOMBRE_FILS];
 } * TrieNoeud;
 
-TrieNoeud creer_noeud();
+TrieNoeud creer_noeud_trie();
 void liberer_trie(TrieNoeud trie);
-void inserer_trie(TrieNoeud trie, char *cle, char *valeur);
+TrieNoeud inserer_trie(TrieNoeud trie, char *cle, char *valeur);
 char *recuperer_trie(TrieNoeud trie, char *cle);
 
 #endif
